@@ -1,0 +1,162 @@
+:root {
+  /* Snow, shade on snow, and the cold blue you only see on an overcast day. */
+  --snow: #fbfcfd;
+  --shade: #f0f3f5;
+  --ink: #111418;
+  --ink-body: #3d454c;
+  --ink-soft: #5a636b;
+  --ink-faint: #98a1a8;
+  --line: #e2e7ea;
+  --alpine: #2e5f80;
+
+  /* Trail markers. Signage in the footer; they rate nothing. */
+  --green: #3d7a4e;
+  --blue: #2e5f80;
+  --diamond: #111418;
+
+  --mono: ui-monospace, 'Cascadia Mono', 'SF Mono', Consolas, monospace;
+  --gutter: clamp(1.25rem, 5vw, 3.5rem);
+  --measure: 40rem;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body,
+h1,
+h2,
+h3,
+p,
+ul,
+ol,
+figure {
+  margin: 0;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--snow);
+  color: var(--ink);
+  font-family: Archivo, system-ui, sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration-color: var(--line);
+  text-underline-offset: 0.25em;
+  transition: text-decoration-color 0.15s;
+}
+
+a:hover {
+  text-decoration-color: var(--alpine);
+}
+
+:focus-visible {
+  outline: 2px solid var(--alpine);
+  outline-offset: 3px;
+}
+
+/* Type -------------------------------------------------------------- */
+
+h1,
+h2,
+h3 {
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  font-size: clamp(2.4rem, 6vw, 4rem);
+}
+
+h2 {
+  font-size: clamp(1.4rem, 2.6vw, 1.8rem);
+}
+
+h3 {
+  font-size: 1.125rem;
+  letter-spacing: -0.01em;
+}
+
+/* The mono kicker is the site's connective tissue: it labels things the way
+   a trail sign does, and keeps the sans doing only one job. */
+.kicker {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.lead {
+  font-size: clamp(1.1rem, 2vw, 1.3rem);
+  line-height: 1.5;
+  color: var(--ink-soft);
+  max-width: var(--measure);
+}
+
+.prose {
+  max-width: var(--measure);
+  color: var(--ink-body);
+  font-size: 1.125rem;
+  line-height: 1.72;
+}
+
+.prose p + p {
+  margin-top: 1.1em;
+}
+
+/* Layout ------------------------------------------------------------ */
+
+.wrap {
+  width: 100%;
+  max-width: 68rem;
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+/* Label on the left, content on the right: the spec-sheet spine that every
+   page hangs off. Collapses to a stack on narrow screens. */
+.spine {
+  display: grid;
+  gap: 0.9rem 2rem;
+  grid-template-columns: 1fr;
+  padding-block: clamp(2.25rem, 5vw, 3.5rem);
+  border-top: 1px solid var(--line);
+}
+
+@media (min-width: 46rem) {
+  .spine {
+    grid-template-columns: 6.5rem minmax(0, 1fr);
+  }
+}
+
+.spine > .kicker {
+  padding-top: 0.5rem;
+}
+
+section:first-of-type > .spine {
+  border-top: 0;
+}

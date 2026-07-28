@@ -1,0 +1,80 @@
+import {
+  siBlazor,
+  siC,
+  siCloudflare,
+  siCplusplus,
+  siDocker,
+  siDotnet,
+  siFastapi,
+  siFlask,
+  siGit,
+  siGithubactions,
+  siJavascript,
+  siKotlin,
+  siLinux,
+  siNasa,
+  siNodedotjs,
+  siNvidia,
+  siOpenjdk,
+  siPostgresql,
+  siPython,
+  siRaspberrypi,
+  siReact,
+  siSharp,
+  siSqlite,
+  siStmicroelectronics,
+} from 'simple-icons'
+
+// Not everything has a logo, and inventing one would be worse than going without.
+// Those entries render as plain chips. See SkillGroup.vue.
+export const skills = [
+  {
+    heading: 'Languages',
+    items: [
+      { name: 'C', icon: siC },
+      { name: 'C++', icon: siCplusplus },
+      { name: 'C#', icon: siSharp },
+      { name: 'Python', icon: siPython },
+      { name: 'Java', icon: siOpenjdk },
+      { name: 'Kotlin', icon: siKotlin },
+      { name: 'JavaScript', icon: siJavascript },
+      { name: 'SQL' },
+    ],
+  },
+  {
+    heading: 'Embedded & flight',
+    items: [
+      { name: 'NASA cFS', icon: siNasa },
+      { name: 'FreeRTOS' },
+      { name: 'STM32', icon: siStmicroelectronics },
+      { name: 'Linux', icon: siLinux },
+      { name: 'Raspberry Pi', icon: siRaspberrypi },
+      { name: 'NVIDIA Jetson', icon: siNvidia },
+      { name: 'UART / GPIO' },
+    ],
+  },
+  {
+    heading: 'Web',
+    items: [
+      { name: 'Blazor', icon: siBlazor },
+      { name: '.NET', icon: siDotnet },
+      { name: 'React', icon: siReact },
+      { name: 'Node.js', icon: siNodedotjs },
+      { name: 'Flask', icon: siFlask },
+      { name: 'FastAPI', icon: siFastapi },
+    ],
+  },
+  {
+    heading: 'Tools & data',
+    items: [
+      { name: 'Git', icon: siGit },
+      { name: 'GitHub Actions', icon: siGithubactions },
+      { name: 'Docker', icon: siDocker },
+      { name: 'Azure' },
+      { name: 'Microsoft Fabric' },
+      { name: 'PostgreSQL', icon: siPostgresql },
+      { name: 'SQLite', icon: siSqlite },
+      { name: 'Cloudflare', icon: siCloudflare },
+    ],
+  },
+]
