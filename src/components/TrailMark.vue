@@ -1,22 +1,19 @@
 <script setup>
-// A single trail marker, sized to sit inline with the mono kickers. Shape and
-// colour are paired the way real signage pairs them, so the marker reads as a
-// waypoint down the page rather than a rating of anything.
 const shapes = {
   circle: { d: 'M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16Z', fill: 'var(--green)' },
   square: { d: 'M5 5h14v14H5Z', fill: 'var(--blue)' },
   diamond: { d: 'M12 3l9 9-9 9-9-9Z', fill: 'var(--diamond)' },
 }
 
-const order = ['circle', 'square', 'diamond']
+const cycle = ['circle', 'square', 'diamond']
 
 const props = defineProps({
   shape: { type: String, default: '' },
-  // Convenience for v-for: pass the loop index and get the next marker along.
+  // pass a v-for index to walk the cycle instead of naming a shape
   step: { type: Number, default: 0 },
 })
 
-const mark = () => shapes[props.shape] ?? shapes[order[props.step % order.length]]
+const mark = () => shapes[props.shape] ?? shapes[cycle[props.step % cycle.length]]
 </script>
 
 <template>

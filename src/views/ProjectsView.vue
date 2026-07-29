@@ -4,9 +4,9 @@ import { projects } from '@/content/projects'
 </script>
 
 <template>
-  <div class="wrap">
-    <PageHead title="Projects" note="Longer write-ups on the things worth explaining." />
+  <PageHead title="Projects" note="Longer write-ups on the things worth explaining." />
 
+  <div class="wrap">
     <ol>
       <li v-for="project in projects" :key="project.slug">
         <RouterLink :to="`/projects/${project.slug}`">
@@ -23,10 +23,6 @@ import { projects } from '@/content/projects'
 </template>
 
 <style scoped>
-ol {
-  border-top: 1px solid var(--line);
-}
-
 li {
   border-bottom: 1px solid var(--line);
 }

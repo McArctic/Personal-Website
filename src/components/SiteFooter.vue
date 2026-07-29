@@ -35,8 +35,7 @@ footer {
   margin-top: 5rem;
 }
 
-/* Fills the footer, cut only by the rule above it and the bottom of the page.
-   Framed on the southern slopes so it is not the same crop as the hero. */
+/* cut off by the rule above and the bottom of the page */
 .topo {
   position: absolute;
   inset: 0;
