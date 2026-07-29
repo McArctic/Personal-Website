@@ -4,6 +4,6 @@ export const extras = [
     label: 'YouTube',
     title: 'Channel',
     note: 'Some skiing videos and whatever else I may or may not post.',
-    href: 'https://youtube.com/',
+    href: 'https://www.youtube.com/@MichaelRMelichar',
   },
 ]
