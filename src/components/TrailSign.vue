@@ -1,6 +1,4 @@
 <script setup>
-// The three trail markers as signage, not as a rating. They sit at the base of
-// every lift in the country and they make no claim about anything here.
 const marks = [
   { d: 'M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16Z', fill: 'var(--green)' },
   { d: 'M5 5h14v14H5Z', fill: 'var(--blue)' },

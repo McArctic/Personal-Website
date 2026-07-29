@@ -10,9 +10,9 @@ const blocks = [
 </script>
 
 <template>
-  <div class="wrap">
-    <PageHead title="Experience" note="Where I've worked and what I owned there." />
+  <PageHead title="Experience" note="Where I've worked and what I owned there." />
 
+  <div class="wrap">
     <section v-for="(block, i) in blocks" :key="block.label">
       <p class="kicker label"><TrailMark :step="i" />{{ block.label }}</p>
       <ol>
@@ -38,6 +38,11 @@ const blocks = [
 section {
   padding-block: clamp(2rem, 5vw, 3rem);
   border-top: 1px solid var(--line);
+}
+
+/* the page head already draws a rule across the full width */
+section:first-of-type {
+  border-top: 0;
 }
 
 .label {
@@ -69,9 +74,7 @@ ol > li:first-child {
   gap: 0.8rem;
 }
 
-/* The source logos are all different shapes on different backgrounds, so they are
-   pre-normalized to square tiles (see the note in the README) and the circle here
-   just crops them. The hairline ring is what keeps the light ones from floating. */
+/* logos are already square going in, so the circle just crops */
 .side img {
   width: 3.25rem;
   height: 3.25rem;
@@ -98,7 +101,7 @@ ul {
   color: var(--ink-soft);
 }
 
-/* A hairline dash instead of a bullet. Quieter, and it lines up. */
+/* hairline dash instead of a bullet */
 ul li {
   position: relative;
   padding-left: 1.1rem;

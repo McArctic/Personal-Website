@@ -25,8 +25,7 @@ import {
   siStmicroelectronics,
 } from 'simple-icons'
 
-// Not everything has a logo, and inventing one would be worse than going without.
-// Those entries render as plain chips. See SkillGroup.vue.
+// entries without an icon just render as plain chips
 export const skills = [
   {
     heading: 'Languages',

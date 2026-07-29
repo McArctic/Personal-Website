@@ -1,11 +1,6 @@
-"""Turn a logo of any shape into a square tile the site can render as a circle.
+"""Turn a logo of any shape into a square tile the site renders as a circle.
 
     python tools/logo-tile.py ~/Downloads/acme.png public/logos/acme.png
-
-Logos arrive as wide banners, squares, and transparent PNGs on every possible
-background. Masking those to circles in CSS alone leaves the wide ones floating as
-small rectangles in a white void, so they get normalized to squares here instead:
-the background fills the whole tile, and the mark sits inside the inscribed circle.
 
 Requires Pillow (`pip install pillow`).
 """
@@ -15,36 +10,39 @@ from pathlib import Path
 
 from PIL import Image
 
-SIZE = 256
+TILE_SIZE = 256
 
-# A circle inscribed in a square clips the corners, so the mark has to sit well
-# inside it. Wide marks need more room than square ones.
+# the circle clips the corners, so wide marks need more room to breathe
 INSET_WIDE = 0.66
 INSET_SQUARE = 0.80
 
 
-def background(img):
-    """Best guess at the tile colour: the most common of the four corners."""
-    w, h = img.size
-    corners = [img.getpixel(p) for p in ((0, 0), (w - 1, 0), (0, h - 1), (w - 1, h - 1))]
+def background_colour(image):
+    """Most common of the four corner pixels."""
+    width, height = image.size
+    corners = [
+        image.getpixel(p)
+        for p in ((0, 0), (width - 1, 0), (0, height - 1), (width - 1, height - 1))
+    ]
     opaque = [c[:3] for c in corners if len(c) < 4 or c[3] > 128]
     if not opaque:
         return (255, 255, 255)
     return max(set(opaque), key=opaque.count)
 
 
-def tile(src, dest):
-    img = Image.open(src).convert("RGBA")
-    ratio = max(img.width, img.height) / min(img.width, img.height)
-    inset = INSET_WIDE if ratio > 1.3 else INSET_SQUARE
+def tile(source_path, dest_path):
+    image = Image.open(source_path).convert("RGBA")
+    aspect = max(image.width, image.height) / min(image.width, image.height)
+    inset = INSET_WIDE if aspect > 1.3 else INSET_SQUARE
 
-    factor = min(SIZE * inset / img.width, SIZE * inset / img.height)
-    mark = img.resize((round(img.width * factor), round(img.height * factor)), Image.LANCZOS)
+    scale = min(TILE_SIZE * inset / image.width, TILE_SIZE * inset / image.height)
+    mark = image.resize((round(image.width * scale), round(image.height * scale)), Image.LANCZOS)
 
-    canvas = Image.new("RGB", (SIZE, SIZE), background(img))
-    canvas.paste(mark, ((SIZE - mark.width) // 2, (SIZE - mark.height) // 2), mark)
-    canvas.save(dest)
-    print(f"{dest}  {SIZE}x{SIZE}  bg {background(img)}")
+    colour = background_colour(image)
+    canvas = Image.new("RGB", (TILE_SIZE, TILE_SIZE), colour)
+    canvas.paste(mark, ((TILE_SIZE - mark.width) // 2, (TILE_SIZE - mark.height) // 2), mark)
+    canvas.save(dest_path)
+    print(f"{dest_path}  {TILE_SIZE}x{TILE_SIZE}  bg {colour}")
 
 
 if __name__ == "__main__":

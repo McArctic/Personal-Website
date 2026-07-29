@@ -2,19 +2,13 @@
 import { onBeforeUnmount, onMounted, ref, shallowRef } from 'vue'
 import { contours } from '@/content/killington'
 
-// Real contour lines of Killington Peak, Vermont, from the USGS 10 m elevation
-// dataset. See src/content/killington.js for the source and how it was derived.
-// The cursor pushes the terrain out near where it is and leaves the rest alone.
-const REACH = 240 // how far the cursor's influence carries, in viewBox units
-const LIFT = 20 // how far the nearest stretch of contour is pushed
+const CURSOR_REACH = 240
+const PUSH_DISTANCE = 20
 
-// Which part of the mountain to frame. The svg fills its container and crops with
-// `slice`, so lines only ever get cut at the container's own border, never mid-air.
 defineProps({ align: { type: String, default: 'xMidYMid' } })
 
-// 'M x y L x y L ...' into points, once, at module load.
-const lines = contours.map((c) =>
-  c.d
+const contourPoints = contours.map((contour) =>
+  contour.d
     .slice(2)
     .split(' L ')
     .map((pair) => pair.split(' ').map(Number)),
@@ -22,120 +16,115 @@ const lines = contours.map((c) =>
 
 const round = (n) => Math.round(n * 10) / 10
 
-// Catmull-Rom through the sampled points, as cubic Béziers. The contours are
-// simplified polylines, so this is what keeps them reading as terrain rather
-// than as a chain of straight segments.
-function toPath(pts) {
-  const n = pts.length
-  if (n < 3) return `M ${pts.map((p) => `${round(p[0])} ${round(p[1])}`).join(' L ')}`
-  let d = `M ${round(pts[0][0])} ${round(pts[0][1])}`
-  for (let i = 0; i < n - 1; i++) {
-    const [x0, y0] = pts[i === 0 ? 0 : i - 1]
-    const [x1, y1] = pts[i]
-    const [x2, y2] = pts[i + 1]
-    const [x3, y3] = pts[Math.min(i + 2, n - 1)]
-    d +=
-      ` C ${round(x1 + (x2 - x0) / 6)} ${round(y1 + (y2 - y0) / 6)},` +
-      ` ${round(x2 - (x3 - x1) / 6)} ${round(y2 - (y3 - y1) / 6)},` +
-      ` ${round(x2)} ${round(y2)}`
+// Catmull-Rom to Béziers, so the simplified polylines still read as terrain
+function toSmoothPath(points) {
+  const count = points.length
+  if (count < 3) {
+    return `M ${points.map(([x, y]) => `${round(x)} ${round(y)}`).join(' L ')}`
   }
-  return d
+  let path = `M ${round(points[0][0])} ${round(points[0][1])}`
+  for (let i = 0; i < count - 1; i++) {
+    const [prevX, prevY] = points[i === 0 ? 0 : i - 1]
+    const [startX, startY] = points[i]
+    const [endX, endY] = points[i + 1]
+    const [nextX, nextY] = points[Math.min(i + 2, count - 1)]
+    path +=
+      ` C ${round(startX + (endX - prevX) / 6)} ${round(startY + (endY - prevY) / 6)},` +
+      ` ${round(endX - (nextX - startX) / 6)} ${round(endY - (nextY - startY) / 6)},` +
+      ` ${round(endX)} ${round(endY)}`
+  }
+  return path
 }
 
-const REST = lines.map(toPath)
+const restingPaths = contourPoints.map(toSmoothPath)
 
-function build(mx, my, strength) {
-  if (strength <= 0.001) return REST
-  return lines.map((pts) =>
-    toPath(
-      pts.map(([x, y]) => {
-        const dx = x - mx
-        const dy = y - my
-        const d2 = dx * dx + dy * dy
-        // Gaussian falloff: only the stretch of contour near the cursor moves.
-        const push = LIFT * strength * Math.exp(-d2 / (REACH * REACH))
+function deform(cursorX, cursorY, strength) {
+  if (strength <= 0.001) return restingPaths
+  return contourPoints.map((points) =>
+    toSmoothPath(
+      points.map(([x, y]) => {
+        const dx = x - cursorX
+        const dy = y - cursorY
+        const distanceSq = dx * dx + dy * dy
+        // gaussian falloff, so only the lines near the cursor move
+        const push = PUSH_DISTANCE * strength * Math.exp(-distanceSq / (CURSOR_REACH * CURSOR_REACH))
         if (push < 0.05) return [x, y]
-        const dist = Math.sqrt(d2) || 1
-        return [x + (dx / dist) * push, y + (dy / dist) * push]
+        const distance = Math.sqrt(distanceSq) || 1
+        return [x + (dx / distance) * push, y + (dy / distance) * push]
       }),
     ),
   )
 }
 
-const svg = shallowRef(null)
-const paths = ref(REST)
+const svgEl = shallowRef(null)
+const paths = ref(restingPaths)
 const emphasis = ref(1)
 
-const still = !matchMedia('(prefers-reduced-motion: reduce)').matches
-const target = { x: 640, y: 450, s: 0 }
-const eased = { x: 640, y: 450, s: 0 }
-let frame = 0
+const motionAllowed = !matchMedia('(prefers-reduced-motion: reduce)').matches
+const target = { x: 640, y: 450, strength: 0 }
+const current = { x: 640, y: 450, strength: 0 }
+let frameId = 0
 
-function tick() {
-  // Trail the pointer instead of snapping to it, so the terrain settles rather
-  // than twitches.
-  eased.x += (target.x - eased.x) * 0.16
-  eased.y += (target.y - eased.y) * 0.16
-  eased.s += (target.s - eased.s) * 0.09
+function animate() {
+  // trail the pointer a little, otherwise the terrain twitches
+  current.x += (target.x - current.x) * 0.16
+  current.y += (target.y - current.y) * 0.16
+  current.strength += (target.strength - current.strength) * 0.09
 
-  paths.value = build(eased.x, eased.y, eased.s)
-  emphasis.value = 1 + eased.s * 0.9
+  paths.value = deform(current.x, current.y, current.strength)
+  emphasis.value = 1 + current.strength * 0.9
 
-  // Once the pointer is gone and the terrain has all but flattened, snap to rest
-  // and park the loop rather than easing forever against a rounding error.
-  if (target.s === 0 && eased.s < 0.002) {
-    eased.s = 0
-    paths.value = REST
+  // park the loop once everything has flattened back out
+  if (target.strength === 0 && current.strength < 0.002) {
+    current.strength = 0
+    paths.value = restingPaths
     emphasis.value = 1
-    frame = 0
+    frameId = 0
     return
   }
-  frame = requestAnimationFrame(tick)
+  frameId = requestAnimationFrame(animate)
 }
 
-function run() {
-  if (!frame) frame = requestAnimationFrame(tick)
+function startLoop() {
+  if (!frameId) frameId = requestAnimationFrame(animate)
 }
 
-function onMove(e) {
-  // Going through the screen matrix rather than the bounding box, so the viewBox
-  // scale and any CSS transform on the svg (the footer copy is flipped) are both
-  // accounted for. Otherwise the bulge lands mirrored against the cursor.
-  const ctm = svg.value.getScreenCTM()
-  if (!ctm) return
-  const local = new DOMPoint(e.clientX, e.clientY).matrixTransform(ctm.inverse())
-  target.x = local.x
-  target.y = local.y
-  target.s = 1
-  run()
+function onPointerMove(event) {
+  // the screen matrix handles the viewBox scale and any css transform for us
+  const matrix = svgEl.value.getScreenCTM()
+  if (!matrix) return
+  const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse())
+  target.x = point.x
+  target.y = point.y
+  target.strength = 1
+  startLoop()
 }
 
-function onLeave() {
-  target.s = 0
-  run()
+function onPointerLeave() {
+  target.strength = 0
+  startLoop()
 }
 
-let host = null
+let section = null
 
 onMounted(() => {
-  if (!still) return
-  // Listening on the containing section, not the svg, so the contours never take
-  // the mouse away from the text and links sitting over them.
-  host = svg.value.parentElement
-  host.addEventListener('pointermove', onMove)
-  host.addEventListener('pointerleave', onLeave)
+  if (!motionAllowed) return
+  // listen on the section, so the contours never take the mouse from the text
+  section = svgEl.value.parentElement
+  section.addEventListener('pointermove', onPointerMove)
+  section.addEventListener('pointerleave', onPointerLeave)
 })
 
 onBeforeUnmount(() => {
-  if (frame) cancelAnimationFrame(frame)
-  host?.removeEventListener('pointermove', onMove)
-  host?.removeEventListener('pointerleave', onLeave)
+  if (frameId) cancelAnimationFrame(frameId)
+  section?.removeEventListener('pointermove', onPointerMove)
+  section?.removeEventListener('pointerleave', onPointerLeave)
 })
 </script>
 
 <template>
   <svg
-    ref="svg"
+    ref="svgEl"
     viewBox="0 0 1280 900"
     :preserveAspectRatio="`${align} slice`"
     aria-hidden="true"
@@ -143,9 +132,9 @@ onBeforeUnmount(() => {
     :style="{ '--topo-emphasis': emphasis }"
   >
     <path
-      v-for="(d, i) in paths"
+      v-for="(path, i) in paths"
       :key="i"
-      :d="d"
+      :d="path"
       fill="none"
       stroke="currentColor"
       stroke-width="1"
@@ -161,7 +150,7 @@ svg {
   width: 100%;
   height: 100%;
   color: var(--alpine);
-  /* Callers tune --topo-opacity; --topo-emphasis is driven by the cursor above. */
+  /* callers set --topo-opacity, not opacity */
   opacity: calc(var(--topo-opacity, 0.13) * var(--topo-emphasis, 1));
   shape-rendering: geometricPrecision;
   pointer-events: none;

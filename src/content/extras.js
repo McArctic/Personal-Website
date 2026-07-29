@@ -1,4 +1,4 @@
-// Swap the href for the real channel.
+// TODO: swap the href for the real channel
 export const extras = [
   {
     label: 'YouTube',

@@ -36,8 +36,6 @@ ul {
   gap: 0.5rem;
 }
 
-/* Chips, but hairline-outlined rather than filled, closer to a gear list
-   than to a dashboard. */
 li {
   display: flex;
   align-items: center;
@@ -49,7 +47,7 @@ li {
   background: var(--snow);
 }
 
-/* No logo, so the padding evens back out and it stops looking like a gap. */
+/* no logo, so even the padding back out */
 .bare {
   padding-left: 0.75rem;
 }

@@ -5,9 +5,9 @@ import { extras } from '@/content/extras'
 </script>
 
 <template>
-  <div class="wrap">
-    <PageHead title="Extras" note="The part of the resume that doesn't fit on the resume." />
+  <PageHead title="Extras" note="The part of the resume that doesn't fit on the resume." />
 
+  <div class="wrap">
     <ul>
       <li v-for="(item, i) in extras" :key="item.href">
         <a :href="item.href" rel="noopener">
@@ -22,10 +22,6 @@ import { extras } from '@/content/extras'
 </template>
 
 <style scoped>
-ul {
-  border-top: 1px solid var(--line);
-}
-
 li {
   border-bottom: 1px solid var(--line);
 }

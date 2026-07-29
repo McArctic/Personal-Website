@@ -4,8 +4,8 @@
   "compatibility_date": "2026-07-28",
   "assets": {
     "directory": "./dist",
-    // Deep links like /projects/openturret are routes the client router owns,
-    // so anything without a matching file has to fall through to index.html.
+    // deep links like /projects/openturret are routes the client router owns,
+    // so anything without a matching file has to fall through to index.html
     "not_found_handling": "single-page-application"
   }
 }

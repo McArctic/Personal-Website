@@ -49,8 +49,7 @@ import { skills } from '@/content/skills'
   border-bottom: 1px solid var(--line);
 }
 
-/* Fills the hero edge to edge, so the lines are only ever cut by the hero's own
-   borders and the edge of the window. */
+/* fills the hero, so the lines only ever get cut by its borders */
 .topo {
   position: absolute;
   inset: 0;

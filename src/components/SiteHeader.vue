@@ -57,7 +57,6 @@ nav a:hover {
   color: var(--ink);
 }
 
-/* A marker under the current run, the way a sign marks the top of one. */
 nav a.router-link-active {
   color: var(--ink);
 }

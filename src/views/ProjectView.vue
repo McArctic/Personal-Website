@@ -80,7 +80,6 @@ h1 {
   margin-bottom: 0.75rem;
 }
 
-/* Spec block: the facts an employer scans for before deciding to read on. */
 dl {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
