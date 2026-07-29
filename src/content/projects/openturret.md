@@ -1,65 +1,63 @@
 ---
 title: OpenTurret
 year: 2026
-summary: A two-axis turret that aims an airsoft gun at moving targets, splitting vision and prediction on a Pi 5 from motion control on a Pico.
+summary: A two-axis turret that aims an airsoft gun at a moving target, splitting vision and prediction on a Pi 5 from motor control on a Pico.
 stack: [C++, Pico SDK, CMake, TMC2209]
 repo: https://github.com/McArctic/OpenTurret
 status: In progress · firmware bring-up
 ---
 
-The goal is a turret that finds a target on its own, works out where that target is
-going to be, and puts an airsoft round there. Pan and tilt, so two axes of stepper
-motion, and a shot that leads the target instead of chasing it.
+This has been a dream project of mine for a while. I wanted more hands-on hardware
+and vision model experience, and building a turret out of an old airsoft gun seemed
+like the obvious way to get both. The idea: something that can find a moving target,
+work out where it's actually going to be, and put a round there instead of where the
+target used to be.
 
-That last part is what makes it interesting. A round leaves the barrel at a fixed
-speed and takes real time to arrive, so aiming where the target is now is aiming
-where it used to be. The turret has to solve for where the target and the round meet.
+## The plan
 
-## Two computers, on purpose
+The system splits across two computers. A Raspberry Pi 5 runs the vision model and
+does the prediction math, figuring out where a target is heading and what angle the
+turret needs to hit it. All the Pi sends over is a pair of angles. The Pico is the
+driver. Its only job is turning those angles into actual motor movement: handling
+microstepping, moving the steppers, and getting them exactly where they're told to go.
 
-A vision model deciding what is a target, and the ballistics behind an intercept, are
-not work a microcontroller should be doing. But holding a stepper on a commanded
-angle is not work that survives an operating system scheduling something else first.
+## Where it's at right now
 
-So the split is by what each side is good at. A Raspberry Pi 5 runs the camera, the
-detection model, and the prediction math, and its entire output is a pair of angles:
-where the two axes should be pointing. The Pico takes those angles and is responsible
-for nothing except getting the motors there and holding them. Everything above the
-motion loop can change without touching firmware, and the motion loop cannot be
-starved by anything above it.
+Right now I'm just writing the Pico side, the stepper driver. I've got the Pico
+wired up to a TMC2209 stepper driver, and I'm working on the communication layer
+between them over UART.
 
-## Where it actually is
+## Why UART instead of just pins
 
-Parts are still coming in. What exists is the Pico end: firmware in C++ against the
-Pico SDK, built with CMake and Ninja, flashed as a `.uf2` over BOOTSEL, talking to
-TMC2209 stepper drivers.
+The TMC2209 can run in two modes. Pure pin mode is simpler to wire, but you're stuck
+with only two microstep options, and current control means physically turning a
+potentiometer on the board. UART mode opens up way more microstep resolution, lets
+you set current in software instead of by hand, and lets you change any of it on the
+fly instead of committing to a fixed setup. For a project where I want to actually
+tune things as I go, that flexibility was worth the extra wiring complexity.
 
-## Why UART instead of step/dir
+## The UART figured itself out the hard way
 
-TMC2209 drivers will run purely off step and direction pins, and that is where most
-projects stop. The features worth having (stall detection, runtime current control,
-quiet microstepping) only open up over the driver's UART interface.
+The TMC2209 has pins labeled RX and TX, so I wired it up the obvious way. Turned out
+that was wrong, the "TX" pin doesn't actually do anything. The driver only has one
+real UART pin, the one labeled RX, and it's meant to carry both directions on a
+single wire.
 
-Stall detection is the one I want most. A turret that can tell it has hit the end of
-its travel, or that something is in the way, does not need limit switches to know
-where its own limits are.
+So the actual wiring is: the Pico's TX goes through a 1k ohm resistor into that one
+UART pin, and the Pico's RX connects to the same pin directly, no resistor. Once I
+had that wired correctly, a new problem showed up. Since it's a single wire,
+anything I send comes right back to my own RX pin as an echo. I had to clear that
+echo out before I could actually read whatever the driver sent back.
 
-## The part that took the longest
+## Then the data was wrong
 
-The link is half-duplex on a single wire, so every datagram you send comes back at
-you as an echo before the reply does. Until you account for that, the read path looks
-like it is receiving garbage. On top of it, each datagram carries a CRC, and the
-driver silently ignores anything that fails it, so a wrong CRC and a dead wire look
-identical from the host side.
-
-> Worth expanding: how you finally got visibility into the line. Debugging something
-> that fails silently is a good story and most candidates do not have one.
+Once I could talk to the driver, I was getting garbage back for its register values.
+I put an oscilloscope on the line to check the bits were even moving correctly, and
+they were, the driver was responding fine. The actual bug was in my own code, I was
+using memcpy assuming little-endian, and the driver expects big-endian. Fixed that
+and the data started coming back correctly.
 
 ## Still ahead
 
-The vision model, the prediction, and the link between the Pi and the Pico are all
-unbuilt. So is the mount the whole thing sits on.
-
-> Worth adding once you get there: what you picked for detection and why, and how you
-> are measuring whether the prediction is any good. An accuracy number against a
-> moving target is the number this project is judged on.
+The vision model, the prediction math, and the link between the Pi and the Pico are
+all still unbuilt. So is the mount the whole thing sits on.
