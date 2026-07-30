@@ -60,7 +60,7 @@ falls inside a claim's boundaries, then checking your distance to decide how vis
 the wall should be. Between the two, you always know where a border is without the
 game ever telling you outright.
 
-![A border at ground level, drawn as a thin line along the tops of the blocks](/img/capitol/borders-ground.png#stack "In-game claim examples") ![The same borders from altitude, where each claim renders in its own color](/img/capitol/borders-aerial.png)
+![A border at ground level, drawn as a thin line along the tops of the blocks](/img/capitol/borders-ground.jpg#stack "In-game claim examples") ![The same borders from altitude, where each claim renders in its own color](/img/capitol/borders-aerial.jpg)
 
 ## Subclaims
 
