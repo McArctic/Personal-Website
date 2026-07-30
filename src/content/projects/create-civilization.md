@@ -86,7 +86,7 @@ tickets in a single day, all complaining about performance during peak hours. Be
 a broke college student, I couldn't just throw more hardware at the problem, so the
 fix had to be entirely software.
 
-![Day one player count.](/img/create-civilization/pre-release-players.png#wide)
+![Day one player count.](/img/create-civilization/pre-release-players.jpg#wide)
 
 We hit the easy stuff first, switching to Aikar's flags and moving to ZGC for
 garbage collection. Then we profiled with Spark to find where actual bottlenecks

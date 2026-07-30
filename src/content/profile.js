@@ -13,6 +13,6 @@ export const profile = {
     { label: 'Email', href: 'mailto:michaelrmelichar@gmail.com' },
     { label: 'GitHub', href: 'https://github.com/McArctic' },
     { label: 'LinkedIn', href: 'https://linkedin.com/in/michaelrmelichar' },
-    { label: 'Resume', href: '/resume.pdf' },
+    { label: 'Resume', href: '/pdf/resume.pdf' },
   ],
 }
