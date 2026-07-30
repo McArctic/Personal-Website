@@ -4,7 +4,7 @@ year: 2026
 summary: A two-axis turret that aims an airsoft gun at a moving target, splitting vision and prediction on a Pi 5 from motor control on a Pico.
 stack: [C++, Pico SDK, CMake, TMC2209]
 repo: https://github.com/McArctic/OpenTurret
-status: In progress · firmware bring-up
+status: In progress
 ---
 
 This has been a dream project of mine for a while. I wanted more hands-on hardware

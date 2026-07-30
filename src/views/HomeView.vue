@@ -2,6 +2,7 @@
 import TopoLines from '@/components/TopoLines.vue'
 import SkillGroup from '@/components/SkillGroup.vue'
 import TrailMark from '@/components/TrailMark.vue'
+import ProseText from '@/components/ProseText.vue'
 import { profile } from '@/content/profile'
 import { skills } from '@/content/skills'
 </script>
@@ -26,7 +27,7 @@ import { skills } from '@/content/skills'
       <div class="spine">
         <p class="kicker"><TrailMark shape="circle" />About</p>
         <div class="prose">
-          <p v-for="(para, i) in profile.about" :key="i">{{ para }}</p>
+          <ProseText v-for="(para, i) in profile.about" :key="i" :text="para" />
         </div>
       </div>
     </section>
