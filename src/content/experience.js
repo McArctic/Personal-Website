@@ -1,3 +1,13 @@
+export const education = [
+  {
+    org: 'University at Buffalo',
+    place: 'Buffalo, NY',
+    role: 'B.S. Computer Science',
+    period: 'Aug 2024 to Dec 2027',
+    notes: [],
+  },
+]
+
 export const experience = [
   {
     org: 'Linde',
@@ -36,15 +46,5 @@ export const experience = [
       'Built abort and safety handling as FreeRTOS tasks that watch for fault conditions and bring the fill and ignition sequence down cleanly.',
       'Prototyped a Kalman filter in C++ for IMU-based state estimation, validated against simulated accelerometer and gyroscope data.',
     ],
-  },
-]
-
-export const education = [
-  {
-    org: 'University at Buffalo',
-    place: 'Buffalo, NY',
-    role: 'B.S. Computer Science',
-    period: 'Aug 2024 to Dec 2027',
-    notes: [],
   },
 ]

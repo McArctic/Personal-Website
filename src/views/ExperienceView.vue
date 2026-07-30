@@ -4,13 +4,13 @@ import TrailMark from '@/components/TrailMark.vue'
 import { experience, education } from '@/content/experience'
 
 const blocks = [
-  { label: 'Work', entries: experience },
   { label: 'Education', entries: education },
+  { label: 'Work', entries: experience },
 ]
 </script>
 
 <template>
-  <PageHead title="Experience" note="Where I've worked and what I owned there." />
+  <PageHead title="Experience" note="Where I've studied and worked, and what I did there." />
 
   <div class="wrap">
     <section v-for="(block, i) in blocks" :key="block.label">

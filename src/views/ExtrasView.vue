@@ -12,9 +12,8 @@ import { extras } from '@/content/extras'
       <li v-for="(item, i) in extras" :key="item.href">
         <a :href="item.href" rel="noopener">
           <span class="kicker"><TrailMark :step="i" />{{ item.label }}</span>
-          <span class="title">{{ item.title }}</span>
+          <span class="title">{{ item.title }}<span class="arrow" aria-hidden="true">↗</span></span>
           <span class="note">{{ item.note }}</span>
-          <span class="arrow" aria-hidden="true">↗</span>
         </a>
       </li>
     </ul>
@@ -28,15 +27,9 @@ li {
 
 a {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: baseline;
-  gap: 0.25rem 1rem;
+  gap: 0.25rem;
   padding-block: 1.75rem;
   text-decoration: none;
-}
-
-.kicker {
-  grid-column: 1 / -1;
 }
 
 .title {
@@ -47,15 +40,16 @@ a {
 }
 
 .note {
-  grid-column: 1;
   color: var(--ink-soft);
   font-size: 0.9375rem;
   max-width: var(--measure);
 }
 
 .arrow {
-  grid-row: 2;
+  display: inline-block;
+  margin-left: 0.4rem;
   color: var(--ink-faint);
+  font-size: 0.875em;
   transition: transform 0.15s, color 0.15s;
 }
 

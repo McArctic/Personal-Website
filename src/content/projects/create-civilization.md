@@ -1,6 +1,5 @@
 ---
 title: 'Create: Civilization'
-logo: /logos/create-civilization.png
 year: 2024
 summary: A modded Minecraft server that went from two friends to 680+ players, and everything that had to get built to keep up with it.
 stack: [Java, Kotlin, Python, React, SQLite]
@@ -86,6 +85,8 @@ and it started to show. We knew something had to give the moment we got around 2
 tickets in a single day, all complaining about performance during peak hours. Being
 a broke college student, I couldn't just throw more hardware at the problem, so the
 fix had to be entirely software.
+
+![Day one player count.](/img/create-civilization/pre-release-players.png#wide)
 
 We hit the easy stuff first, switching to Aikar's flags and moving to ZGC for
 garbage collection. Then we profiled with Spark to find where actual bottlenecks
