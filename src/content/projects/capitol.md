@@ -33,13 +33,6 @@ together as the mod grew instead of fighting a storage format never meant to hol
 much relational data. The downside is I now have to version every database change and
 set up migrations for table changes so users can upgrade seamlessly.
 
-## Roles
-
-One of the things OPAC got wrong was roles. Teams were stuck with a couple of fixed
-tiers and no way to actually customize who could do what. Capitol lets teams create
-their own roles and assign whatever permissions they want to each one instead of
-forcing everyone into a rigid structure that doesn't fit how the team actually works.
-
 ## Making claims visible
 
 Old claim mods show you where you are with a text popup, something like "Blah Blah's Claim"
