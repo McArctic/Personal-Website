@@ -46,7 +46,7 @@ export const profile = {
       {
         src: '/img/ski/gear.jpg',
         alt: 'Skis planted in the snow next to a helmet and pack, snow coming down',
-        caption: 'No lift, just a hill on campus',
+        caption: 'Random hill on campus',
       },
     ],
   },
