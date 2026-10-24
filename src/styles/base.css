@@ -1,5 +1,5 @@
 :root {
-  /* valley — the light end of the descent */
+  /* valley, the light end of the descent */
   --snow: #fbfcfd;
   --shade: #eef2f5;
   --ink: #111418;
@@ -9,7 +9,7 @@
   --line: #e2e7ea;
   --alpine: #2e5f80;
 
-  /* summit — above the treeline */
+  /* summit, above the treeline */
   --summit: #0c1116;
   --summit-raise: #141c23;
   --summit-ink: #eff4f8;
@@ -28,7 +28,7 @@
   --gutter: clamp(1.25rem, 5vw, 3.5rem);
   --measure: 40rem;
 
-  /* semantic layer — every component reads these, zones remap them */
+  /* semantic layer, every component reads these and zones remap them */
   --bg: var(--snow);
   --bg-raise: var(--shade);
   --fg: var(--ink);

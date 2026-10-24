@@ -9,7 +9,7 @@ function played() {
   try {
     return sessionStorage.getItem(KEY) === '1'
   } catch {
-    // private mode, blocked storage — just treat it as a first visit
+    // private mode, or blocked storage. Treat it as a first visit
     return false
   }
 }

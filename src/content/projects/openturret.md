@@ -66,7 +66,6 @@ and the data started coming back correctly.
 The vision model, the prediction math, and the link between the Pi and the Pico are
 all still unbuilt. So is the mount the whole thing sits on.
 
-This one is on the back burner for now. A lot of what I worked out here, the two
-computer split and the stepper driving, is going straight into
-[Overpass](/projects/overpass), which needs the same two axes pointed at the sky
-instead of across a room.
+This one is on the back burner for now. The TMC2209 work carries straight over to
+[Overpass](/projects/overpass), which needs the same two axes and the same drivers,
+just pointed at the sky instead of across a room.

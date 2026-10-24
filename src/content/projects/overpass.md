@@ -1,57 +1,87 @@
 ---
 title: Overpass
 year: 2026
-summary: A two-axis ground station that tracks satellites across the sky and holds an antenna on them long enough to talk.
-stack: [Python, C++, Servos, SDR]
+summary: A pan/tilt mount that finds a satellite and follows it across the sky, so a ground station can hold a link for the few minutes one is actually overhead.
+stack: [C, FreeRTOS, Pico, TMC2209, SGP4]
 difficulty: diamond
 cover: pass-plot
 featured: true
 status: In progress
 ---
 
-I spend my weeks writing flight software for a cubesat I will never get to talk to. The
-satellite goes up, someone else's ground station talks to it, and my part of the job
-ends at the bench. I wanted the other half of that link. So I'm building the ground
-station: a rotator that tracks a satellite across the sky and keeps an antenna pointed
-at it for the few minutes it's up there.
+Last winter we were outside testing a satellite communications module for UBNL. It was
+cold, we were out there for hours, and we never got a good track on anything. That is
+basically the whole problem in one sentence. A satellite in low orbit crosses the entire
+sky in a few minutes, which is way too fast to follow by hand, so you catch it for a
+second and then spend the rest of the pass guessing where it went.
 
-There are a lot of satellites overhead that will talk to anyone who asks. Weather
-birds broadcasting images in the clear, amateur radio payloads, beacons putting out
-telemetry on a published frequency. None of it needs permission. It just needs you to
-be pointing the right way at the right time.
+Getting a solid uplink and downlink from a ground station is hard enough without that.
+If the antenna is actually pointed at the satellite the whole time it is overhead, a lot
+of that difficulty goes away. So that is what I am building. A pan/tilt mount that finds
+the satellite and follows it horizon to horizon.
 
-## The hard part isn't the radio
+The plot on the project card is what a pass looks like from the ground. The rim is the
+horizon, the middle is straight up, and the arc is the path the mount has to follow.
 
-A pass is short. A low-orbit satellite clears the horizon, climbs, and is gone again in
-something like ten minutes, and for most of that it's moving fast enough that a fixed
-antenna with any real gain will miss it. So the problem splits in two: work out where
-the thing is going to be, and physically get the antenna there before it is.
+## What it is
 
-The first half is math I can do on a laptop. Orbital elements for anything interesting
-are published and updated daily, and propagating them forward gives you azimuth and
-elevation for every second of a pass before it happens. You know when the satellite
-comes up, where it comes up, how high it gets, and where it sets. That's the plot on
-the project card — the arc is a real pass, horizon at the rim, straight overhead in the
-middle.
+A Raspberry Pi Pico running FreeRTOS, two NEMA 17 steppers for pan and tilt, and two
+TMC2209 drivers to run them. There is a GPS module for accurate time and location, and a
+compass module so the thing knows which way it is facing.
 
-The second half is the part I'm actually building. Two axes: azimuth spins the whole
-assembly through a full circle, elevation tilts the antenna from the horizon to
-straight up. Both have to move smoothly and both have to know where they are, because
-an antenna that's five degrees off is an antenna that heard nothing.
+The TMC2209s are the same drivers I was working with on [OpenTurret](/projects/openturret),
+which is most of the reason that project is on the back burner. I would rather put the
+driver work into something I actually need.
+
+## It has to know where it is before it can know where to look
+
+This is the part I did not think about until I started writing the proposal. Pointing at
+a satellite means knowing the time, your location, and which direction is north. Miss any
+one of those and you are pointing at nothing.
+
+So on startup both motors home themselves using sensorless homing on the drivers, which
+means no limit switches to wire or mount. Then the compass gets read to find north. The
+GPS gives the time and location, and it keeps checking, because if the mount gets picked
+up and put somewhere else the compass has to be read again. That check has some slop in
+it on purpose, since GPS drifts a little even when the thing is sitting perfectly still,
+and I do not want normal drift to count as somebody moving it.
+
+## I am not writing the orbit math
+
+Satellite positions come from a TLE, which is a short block of text describing an orbit,
+and the standard way to turn one into a position is SGP4. That algorithm is decades old
+and very well tested, and writing my own version of it would be a worse version of it. So
+I am using an existing library and typing the TLE in by hand for now.
+
+## Four things happening at once
+
+This is the part that makes it a real time problem instead of a scripting problem. Four
+tasks, different priorities, different rates:
+
+The motor task is the highest priority and runs every 10 ms, because that is the one that
+cannot be late. If it stalls, the mount lags behind the satellite and the link drops.
+
+The orbit task runs every 100 ms and works out where the satellite is right now, then
+hands the motor task a target angle through a queue.
+
+The GPS task runs once a second and checks for new fix data. If the location moved more
+than the slop range, it re-reads the compass.
+
+The input task is the lowest priority and just takes in a new TLE.
+
+The time, location, and heading are shared between the GPS task and the orbit task, so
+those are behind a mutex. The drivers' stall signal fires an interrupt that gives a
+semaphore to the motor task, which is how homing knows it is done. Everything periodic
+uses `vTaskDelayUntil` so the rates stay fixed instead of drifting.
 
 ## Where it is right now
 
-I'm on the mechanical side. I have the servos and I'm working through the drive parts
-to get the two axes moving under command before anything gets pointed at the sky. Right
-now it's a lot of fitting and refitting and finding out that the thing I printed is two
-millimetres too small.
+This one is for a class, so it has a ten week plan with real checkpoints. First
+checkpoint is homing working and the angles coming out correct, checked against an online
+tracker. Second is the whole system tracking a simulated pass indoors.
 
-The split I'm planning mirrors what I did on the turret: something with a real operating
-system does the orbital math and decides where to point, and something small and
-boring takes angles and makes the motors go there. Keeping the prediction away from the
-motor loop means neither one can ruin the other's day.
+Right now I am at the start of that, getting FreeRTOS running on the Pico and both motors
+moving. After the indoor tracking works the real test is taking it outside and pointing it
+at something like the ISS, which is the only result that actually counts.
 
-After that it's the radio, and then the only measure of success that counts — pointing
-it at something overhead and getting a signal back down.
-
-I'll put build photos here as it comes together.
+Build photos going here as it comes together.

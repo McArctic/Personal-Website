@@ -1,7 +1,7 @@
 <script setup>
 import { education, experience } from '@/content/experience'
 
-// work first, then school, on one rail — it reads as one history
+// work first, then school, on one rail, so it reads as one history
 const entries = [...experience, ...education]
 </script>
 

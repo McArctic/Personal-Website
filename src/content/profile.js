@@ -7,7 +7,7 @@ export const profile = {
   about: [
     'I write software that runs close to the hardware, most of it aimed at space and defense. At the UB Nanosatellite Laboratory I write flight software for cubesats for defense research, and at UB SEDS I work on our hybrid rocket for IREC. Last competition I handled ground station systems, things like solenoid drivers for filling the nitrous, safety monitoring, and pulling the umbilical before launch. I really just love building things that are physical. I get so much joy from watching something I worked on at a laptop become real.',
     'Space and defense really pull me in for the same reason. Both end in something tangible, and I get to watch what I do contribute to something bigger. I also just love being at the bleeding edge.',
-    'I\'ve always loved software and computer science, outside of school I\'ve built more personal projects than I can count, most lost to time by now. Right now I\'m building [a ground station that tracks satellites overhead](/projects/overpass) so I can talk to them myself. Another one of my bigger projects is my [Minecraft server](/projects/create-civilization), which I\'ve been running since 2024 with 680 members and counting, that one\'s been such a journey. Then in the winter I ALWAYS try to find time to ski.',
+    'I\'ve always loved software and computer science, outside of school I\'ve built more personal projects than I can count, most lost to time by now. Right now I\'m building [a mount that tracks satellites as they pass overhead](/projects/overpass), because trying to follow one by hand in the cold did not go well. Another one of my bigger projects is my [Minecraft server](/projects/create-civilization), which I\'ve been running since 2024 with 680 members and counting, that one\'s been such a journey. Then in the winter I ALWAYS try to find time to ski.',
   ],
 
   // the two benches the about section is actually describing
@@ -28,7 +28,7 @@ export const profile = {
   now: {
     note: 'What I\'m actually working on this month.',
     items: [
-      'Building the az/el rotator for [Overpass](/projects/overpass), getting the servos and the new drive parts talking before I point it at anything.',
+      'Getting FreeRTOS onto the Pico for [Overpass](/projects/overpass), with both motors moving before anything gets pointed at the sky.',
       'Flight software at UBNL, and ground support firmware for the SEDS hybrid ahead of the next IREC cycle.',
       'Waiting on enough snow to be worth the drive.',
     ],

@@ -1,5 +1,5 @@
 /* Plain columns, no logo chips. Everything here is something I'd be happy to
-   be asked about in an interview — the list is short on purpose. */
+   be asked about in an interview. The list is short on purpose. */
 
 export const skills = [
   {

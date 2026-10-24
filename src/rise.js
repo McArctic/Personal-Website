@@ -1,4 +1,4 @@
-/* v-rise — fade a block up the first time it comes into view.
+/* v-rise, fade a block up the first time it comes into view.
 
    v-rise          default timing
    v-rise="2"      hold back two steps, for staggering a row of cards    */
