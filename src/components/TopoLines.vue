@@ -83,26 +83,27 @@ function deform(cursorX, cursorY, strength) {
 
 /* The plot runs on CSS animations, which do not start until the browser
    first styles these paths, and that waits on the render-blocking webfont
-   stylesheet. Anything timing the plot from mount therefore runs ahead of
-   it, so say when the strokes really start and really finish. */
+   stylesheet. Anything timing the plot from mount therefore runs ahead of it.
+
+   So count the animation events instead. The listeners go on in onMounted,
+   before a single stroke can have finished, and animationend bubbles up from
+   the paths, so the count cannot be missed however late the plot begins.
+   Asking getAnimations() on a frame would not do: on a cold load it answers
+   with nothing yet, which reads identically to nothing left to wait for. */
 const emit = defineEmits(['plotstart', 'plotted'])
 
 function reportPlot(el) {
-  if (!motionAllowed) {
+  const total = el.querySelectorAll('path').length
+  if (!motionAllowed || !total) {
     emit('plotstart')
     emit('plotted')
     return
   }
-  // the animations only exist once styles have resolved
-  requestAnimationFrame(() => {
-    const running = [...el.querySelectorAll('path')].flatMap((path) => path.getAnimations())
-    if (!running.length) {
-      emit('plotstart')
-      emit('plotted')
-      return
-    }
-    Promise.allSettled(running.map((a) => a.ready)).then(() => emit('plotstart'))
-    Promise.allSettled(running.map((a) => a.finished)).then(() => emit('plotted'))
+
+  let ended = 0
+  el.addEventListener('animationstart', () => emit('plotstart'), { once: true })
+  el.addEventListener('animationend', () => {
+    if (++ended === total) emit('plotted')
   })
 }
 
