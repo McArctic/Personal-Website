@@ -4,7 +4,11 @@ import TopoLines from '@/components/TopoLines.vue'
 import { summitElevation } from '@/content/killington'
 import { endIntro } from '@/intro'
 
-const PLOT_TIME = 1.7
+const PLOT_TIME = 1.5
+// a beat on the finished map before it hands over
+const HOLD = 650
+// if the plot never reports back, leave anyway rather than trap anyone here
+const BACKSTOP = 6000
 const BASE_ELEVATION = 352
 
 const elevation = ref(BASE_ELEVATION)
@@ -34,13 +38,24 @@ function finish() {
   timers = [setTimeout(endIntro, 620)]
 }
 
+// the readout climbs with the strokes, so it starts when they do
+function onPlotStart() {
+  startedAt = performance.now()
+  cancelAnimationFrame(frameId)
+  frameId = requestAnimationFrame(climb)
+}
+
+function onPlotted() {
+  if (leaving.value) return
+  timers.push(setTimeout(finish, HOLD))
+}
+
 onMounted(() => {
   // nothing underneath is ready to be looked at yet
   document.body.style.overflow = 'hidden'
   startedAt = performance.now()
   frameId = requestAnimationFrame(climb)
-  // hold for a beat once the summit ring lands, then hand over
-  timers.push(setTimeout(finish, PLOT_TIME * 1000 + 280))
+  timers.push(setTimeout(finish, BACKSTOP))
 
   addEventListener('pointerdown', finish)
   addEventListener('keydown', finish)
@@ -60,7 +75,15 @@ onBeforeUnmount(() => {
 <template>
   <div class="intro dark" :class="{ leaving }">
     <!-- same framing as the hero, so the lines do not jump on handover -->
-    <TopoLines class="topo" align="xMidYMax" draw :draw-time="PLOT_TIME" :interactive="false" />
+    <TopoLines
+      class="topo"
+      align="xMidYMax"
+      draw
+      :draw-time="PLOT_TIME"
+      :interactive="false"
+      @plotstart="onPlotStart"
+      @plotted="onPlotted"
+    />
 
     <div class="readout">
       <p class="kicker">Killington Peak · Vermont</p>
