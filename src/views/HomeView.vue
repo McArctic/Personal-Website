@@ -72,14 +72,21 @@ onMounted(() => {
           <ProseText v-for="(para, i) in profile.about" :key="i" :text="para" />
         </div>
 
-        <div v-rise="1" class="columns">
-          <SkillGroup
-            v-for="(group, i) in skills"
-            :key="group.heading"
-            v-bind="group"
-            :step="i"
-          />
-        </div>
+        <ul v-rise="1" class="bench">
+          <li v-for="shot in profile.bench" :key="shot.src">
+            <img :src="shot.src" :alt="shot.alt" loading="lazy" decoding="async" />
+            <p class="kicker">{{ shot.caption }}</p>
+          </li>
+        </ul>
+      </div>
+
+      <div v-rise class="columns">
+        <SkillGroup
+          v-for="(group, i) in skills"
+          :key="group.heading"
+          v-bind="group"
+          :step="i"
+        />
       </div>
     </div>
   </section>
@@ -328,19 +335,56 @@ h1 {
 
 @media (min-width: 60rem) {
   .about-grid {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
   }
+}
+
+/* the hardware the words are actually about */
+.bench {
+  display: grid;
+  gap: 1.25rem;
+  align-content: start;
+}
+
+@media (min-width: 34rem) and (max-width: 59.99rem) {
+  .bench {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.bench img {
+  width: 100%;
+  object-fit: cover;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  background: var(--bg-raise);
+}
+
+.bench li:first-child img {
+  aspect-ratio: 4 / 5;
+}
+
+.bench li:last-child img {
+  aspect-ratio: 4 / 3;
+}
+
+.bench .kicker {
+  margin-top: 0.6rem;
 }
 
 .columns {
   display: grid;
   gap: 2rem;
   align-content: start;
+  margin-top: clamp(3rem, 7vw, 5rem);
+  padding-top: clamp(2rem, 4vw, 3rem);
+  border-top: 1px solid var(--rule);
 }
 
-@media (min-width: 34rem) and (max-width: 59.99rem) {
+@media (min-width: 34rem) {
   .columns {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2.5rem;
   }
 }
 

@@ -1,11 +1,14 @@
 <script setup>
 import { computed, ref, watchEffect } from 'vue'
+import { useRouter } from 'vue-router'
 import { findProject } from '@/content/projects'
 import ImageLightbox from '@/components/ImageLightbox.vue'
 import PassPlot from '@/components/PassPlot.vue'
 import TrailMark from '@/components/TrailMark.vue'
 
 const props = defineProps({ slug: { type: String, required: true } })
+
+const router = useRouter()
 
 const project = computed(() => findProject(props.slug))
 
@@ -18,6 +21,14 @@ const isImage = computed(() => Boolean(cover.value) && !isPlot.value)
 const lightbox = ref(null)
 
 function onBodyClick(event) {
+  // marked writes plain anchors, so links between write-ups would reload
+  const link = event.target.closest('a[href^="/"]')
+  if (link && !/\.\w+$/.test(link.getAttribute('href'))) {
+    event.preventDefault()
+    router.push(link.getAttribute('href'))
+    return
+  }
+
   const deck = event.target.closest('.stack')
   if (!deck) return
 
@@ -236,6 +247,16 @@ dd {
 
 .body :deep(.gallery-small) {
   max-width: 26rem;
+}
+
+/* upright frames, so a row of phone photos keeps its subject */
+.body :deep(.gallery-tall) {
+  max-width: 32rem;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+}
+
+.body :deep(.gallery-tall img) {
+  aspect-ratio: 3 / 4;
 }
 
 /* stacked deck ------------------------------------------------------- */

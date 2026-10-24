@@ -27,7 +27,7 @@ const isImage = Boolean(props.project.cover) && !isPlot
 
     <p class="index kicker">
       {{ pad(index + 1) }} <span>/ {{ pad(total) }}</span>
-      <span v-if="project.status === 'Shelved'" class="shelved">Shelved</span>
+      <span v-if="project.status === 'Back burner'" class="paused">Back burner</span>
     </p>
 
     <h3 class="title">
@@ -107,7 +107,7 @@ const isImage = Boolean(props.project.cover) && !isPlot
   opacity: 0.55;
 }
 
-.shelved {
+.paused {
   margin-left: auto;
   padding: 0.15rem 0.45rem;
   border: 1px solid var(--rule);

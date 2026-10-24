@@ -10,6 +10,20 @@ export const profile = {
     'I\'ve always loved software and computer science, outside of school I\'ve built more personal projects than I can count, most lost to time by now. Right now I\'m building [a ground station that tracks satellites overhead](/projects/overpass) so I can talk to them myself. Another one of my bigger projects is my [Minecraft server](/projects/create-civilization), which I\'ve been running since 2024 with 680 members and counting, that one\'s been such a journey. Then in the winter I ALWAYS try to find time to ski.',
   ],
 
+  // the two benches the about section is actually describing
+  bench: [
+    {
+      src: '/img/seds/avionics-bay.jpg',
+      alt: 'The SEDS hybrid rocket avionics bay opened up, boards and harness visible',
+      caption: 'SEDS · hybrid rocket avionics bay',
+    },
+    {
+      src: '/img/ubnl/flight-board.jpg',
+      alt: 'A flight computer development board on the bench, cabled up for testing',
+      caption: 'UBNL · flight computer on the bench',
+    },
+  ],
+
   // the current-conditions board at the bottom of the mountain
   now: {
     note: 'What I\'m actually working on this month.',
@@ -23,8 +37,18 @@ export const profile = {
   ski: {
     note: 'Skiing is the one thing I\'ll rearrange a week for. I film some of it, mostly badly, and put it up along with whatever else I feel like posting.',
     channel: { label: 'YouTube', href: 'https://www.youtube.com/@MichaelRMelichar' },
-    // drop files in /public/img/ski and list them here, caption first
-    shots: [],
+    shots: [
+      {
+        src: '/img/ski/run.jpg',
+        alt: 'Me skiing down a tree-lined run',
+        caption: 'Somewhere worth the drive',
+      },
+      {
+        src: '/img/ski/gear.jpg',
+        alt: 'Skis planted in the snow next to a helmet and pack, snow coming down',
+        caption: 'Waiting on the lift',
+      },
+    ],
   },
 
   contact: {
