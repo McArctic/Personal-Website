@@ -27,6 +27,9 @@ function measure() {
   zoned = [...document.querySelectorAll('[data-zone]')]
   marked = [...document.querySelectorAll('[data-station]')]
 
+  // rubber-banding past the top shows the canvas, so it follows the first band
+  document.body.dataset.top = zoned[0]?.dataset.zone ?? 'light'
+
   const span = Math.max(document.body.scrollHeight - innerHeight, 1)
   stations.value = marked.map((el) => ({
     label: el.dataset.station,

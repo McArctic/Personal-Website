@@ -54,13 +54,17 @@ header {
   border-bottom: 1px solid transparent;
   transition: background 0.4s, border-color 0.4s, color 0.4s;
   color: var(--summit-ink);
+  /* the header sits in flow above the first band, so without a background
+     of its own the page canvas shows through and the text lands on it */
+  background: var(--summit);
 }
 
 header.light {
   color: var(--ink);
+  background: var(--snow);
 }
 
-/* clear at the summit, then it has to carry its own background */
+/* once it is over content it goes translucent and picks up a rule */
 header.lifted {
   background: color-mix(in srgb, var(--summit) 86%, transparent);
   border-bottom-color: var(--summit-line);

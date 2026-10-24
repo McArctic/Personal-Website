@@ -92,13 +92,18 @@ html {
 }
 
 body {
-  /* both ends of the descent are dark, so overscroll matches at either end */
+  /* only ever seen when overscrolling, and descent.js keeps it on the zone
+     the page actually starts with */
   background: var(--summit);
   color: var(--ink);
   font-family: Archivo, system-ui, sans-serif;
   font-size: 1.0625rem;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
+}
+
+body[data-top='light'] {
+  background: var(--snow);
 }
 
 img,
