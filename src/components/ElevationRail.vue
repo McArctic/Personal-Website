@@ -65,7 +65,10 @@ const elevation = computed(() =>
   --rail-lit: #5a636b;
 }
 
-/* only once the page margin is wide enough to hold it clear of the text */
+/* The labels run to the right of the rail, into the page margin, so the rail
+   only appears once that margin can hold the longest one. Measured at this
+   width there is about 19px between the longest label and the text column.
+   Lengthen a station name and that is the budget it has to fit in. */
 @media (min-width: 88rem) {
   .rail {
     display: flex;
@@ -107,7 +110,11 @@ const elevation = computed(() =>
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  translate: -50% -50%;
+  /* only the dot straddles the rail. A percentage here would resolve against
+     the whole row, label included, so every tick would sit a different
+     distance left depending on how long its label is. */
+  margin-left: calc((1px - 5px) / 2);
+  translate: 0 -50%;
   text-decoration: none;
   color: inherit;
 }
