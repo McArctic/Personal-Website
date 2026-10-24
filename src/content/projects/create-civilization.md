@@ -3,6 +3,8 @@ title: 'Create: Civilization'
 year: 2024
 summary: A modded Minecraft server that went from two friends to 680+ players, and everything that had to get built to keep up with it.
 stack: [Java, Kotlin, Python, React, SQLite]
+difficulty: square
+cover: /img/create-civilization/pre-release-players.jpg
 status: Active
 ---
 

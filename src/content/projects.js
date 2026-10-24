@@ -17,6 +17,7 @@ function parseFrontmatter(raw, path) {
 /* images -------------------------------------------------------------
    ![Caption](/img/slug/shot.jpg)        figure at column width
    ![Caption](/img/slug/shot.jpg#small)  narrower, for detail shots
+   ![Caption](/img/slug/shot.jpg#tall)   upright, for phone shots in a row
    ![Caption](/img/slug/shot.jpg#wide)   breaks out past the text column
    ![](/img/slug/shot.jpg)               no alt, so no caption
 
@@ -34,7 +35,7 @@ function parseFrontmatter(raw, path) {
    Tokens are read across the whole group, so one image can carry the
    mode and another the size.                                         */
 
-const SIZES = new Set(['small', 'wide'])
+const SIZES = new Set(['small', 'tall', 'wide'])
 const MODES = new Set(['stack'])
 
 const escapeHtml = (value) =>
@@ -105,6 +106,7 @@ export const projects = Object.entries(markdownFiles)
       ...meta,
     }
   })
-  .sort((a, b) => b.year - a.year)
+  // what I want seen first, then newest, so a tie on year is not a coin flip
+  .sort((a, b) => Number(b.featured ?? false) - Number(a.featured ?? false) || b.year - a.year)
 
 export const findProject = (slug) => projects.find((project) => project.slug === slug)

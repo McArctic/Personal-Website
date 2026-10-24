@@ -3,6 +3,8 @@ title: Capitol
 year: 2025
 summary: A claims and permissions mod for Minecraft, built standalone first, backed by SQLite, with borders you can actually see instead of a popup name tag.
 stack: [Java, NeoForge, SQLite]
+difficulty: diamond
+cover: /img/capitol/borders-aerial.jpg
 repo: https://github.com/Create-Civilization/Capitol
 download: https://modrinth.com/mod/capitol
 status: In progress

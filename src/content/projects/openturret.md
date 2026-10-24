@@ -3,8 +3,10 @@ title: OpenTurret
 year: 2026
 summary: A two-axis turret that aims an airsoft gun at a moving target, splitting vision and prediction on a Pi 5 from motor control on a Pico.
 stack: [C++, Pico SDK, CMake, TMC2209]
+difficulty: square
+cover: /img/openturret/workbench.jpg
 repo: https://github.com/McArctic/OpenTurret
-status: In progress
+status: Back burner
 ---
 
 This has been a dream project of mine for a while. I wanted more hands-on hardware
@@ -26,6 +28,8 @@ microstepping, moving the steppers, and getting them exactly where they're told 
 Right now I'm just writing the Pico side, the stepper driver. I've got the Pico
 wired up to a TMC2209 stepper driver, and I'm working on the communication layer
 between them over UART.
+
+![A Pico and a TMC2209 on a breadboard with a scope probe clipped on](/img/openturret/driver-bench.jpg#tall) ![An oscilloscope showing a square wave at 998 Hz and 50 percent duty](/img/openturret/step-pulse.jpg "Pico into a TMC2209, and the step output coming off it at 998 Hz")
 
 ## Why UART instead of just pins
 
@@ -61,3 +65,7 @@ and the data started coming back correctly.
 
 The vision model, the prediction math, and the link between the Pi and the Pico are
 all still unbuilt. So is the mount the whole thing sits on.
+
+This one is on the back burner for now. The TMC2209 work carries straight over to
+[Overpass](/projects/overpass), which needs the same two axes and the same drivers,
+just pointed at the sky instead of across a room.

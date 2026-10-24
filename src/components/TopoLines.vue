@@ -1,11 +1,19 @@
 <script setup>
-import { onBeforeUnmount, onMounted, ref, shallowRef } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, shallowRef } from 'vue'
 import { contours } from '@/content/killington'
 
 const CURSOR_REACH = 240
 const PUSH_DISTANCE = 20
 
-defineProps({ align: { type: String, default: 'xMidYMid' } })
+const props = defineProps({
+  align: { type: String, default: 'xMidYMid' },
+  // plot the lines on instead of having them already there
+  draw: { type: Boolean, default: false },
+  // seconds from the first stroke to the last one landing
+  drawTime: { type: Number, default: 1.6 },
+  // the cursor deform costs a frame loop, so bands that don't need it opt out
+  interactive: { type: Boolean, default: true },
+})
 
 const contourPoints = contours.map((contour) =>
   contour.d
@@ -37,6 +45,23 @@ function toSmoothPath(points) {
 }
 
 const restingPaths = contourPoints.map(toSmoothPath)
+
+/* the plot climbs the mountain: the lowest contour starts first and the
+   summit ring lands last, so the terrain fills in from the outside */
+const levels = contours.map((contour) => contour.level)
+const lowest = Math.min(...levels)
+const highest = Math.max(...levels)
+const bandSpan = highest - lowest || 1
+
+/* Each line takes 60% of the budget to draw and the starts are staggered
+   across the other 40%, so the summit ring lands exactly on drawTime. */
+const STAGGER = 0.4
+
+const strokeTime = computed(() => props.drawTime * (1 - STAGGER))
+
+const delays = computed(() =>
+  levels.map((level) => (((level - lowest) / bandSpan) * props.drawTime * STAGGER).toFixed(2)),
+)
 
 function deform(cursorX, cursorY, strength) {
   if (strength <= 0.001) return restingPaths
@@ -108,7 +133,7 @@ function onPointerLeave() {
 let section = null
 
 onMounted(() => {
-  if (!motionAllowed) return
+  if (!motionAllowed || !props.interactive) return
   // listen on the section, so the contours never take the mouse from the text
   section = svgEl.value.parentElement
   section.addEventListener('pointermove', onPointerMove)
@@ -129,7 +154,8 @@ onBeforeUnmount(() => {
     :preserveAspectRatio="`${align} slice`"
     aria-hidden="true"
     focusable="false"
-    :style="{ '--topo-emphasis': emphasis }"
+    :class="{ plotting: draw }"
+    :style="{ '--topo-emphasis': emphasis, '--topo-draw': `${strokeTime}s` }"
   >
     <path
       v-for="(path, i) in paths"
@@ -139,7 +165,9 @@ onBeforeUnmount(() => {
       stroke="currentColor"
       stroke-width="1"
       stroke-linecap="round"
+      pathLength="1"
       vector-effect="non-scaling-stroke"
+      :style="draw ? { animationDelay: `${delays[i]}s` } : null"
     />
   </svg>
 </template>
@@ -149,10 +177,30 @@ svg {
   display: block;
   width: 100%;
   height: 100%;
-  color: var(--alpine);
+  color: var(--accent);
   /* callers set --topo-opacity, not opacity */
   opacity: calc(var(--topo-opacity, 0.13) * var(--topo-emphasis, 1));
   shape-rendering: geometricPrecision;
   pointer-events: none;
+}
+
+/* normalised by pathLength, so every contour plots in the same time */
+.plotting path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: plot var(--topo-draw, 1.6s) cubic-bezier(0.33, 0.8, 0.4, 1) forwards;
+}
+
+@keyframes plot {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plotting path {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
 }
 </style>
