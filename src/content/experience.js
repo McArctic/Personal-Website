@@ -17,7 +17,7 @@ export const experience = [
     place: 'Buffalo, NY',
     role: 'Software Engineering Intern',
     period: 'May to Aug 2026',
-    kicker: 'Upcoming internship',
+    kicker: 'Cryogenics · forecasting',
     notes: [
       'Built a customer-facing web app in C# and Blazor showing live and historical readings from cryogenic freezers, so customers can check temperature and fill levels themselves.',
       'Wrote pipelines pulling historical weather data from public APIs into Microsoft Fabric, feeding a forecasting model that covers 8,000+ plant locations.',
