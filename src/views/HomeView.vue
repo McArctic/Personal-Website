@@ -9,7 +9,7 @@ import TrailMark from '@/components/TrailMark.vue'
 import { profile } from '@/content/profile'
 import { projects } from '@/content/projects'
 import { skills } from '@/content/skills'
-import { goToStation } from '@/descent'
+import { goToStation, remeasureDescent } from '@/descent'
 import { introDone } from '@/intro'
 
 const legend = [
@@ -23,6 +23,9 @@ const hasShots = computed(() => profile.ski.shots.length > 0)
 
 // landing straight on /#work from a write-up has to put you there
 onMounted(() => {
+  // these bands are what the header and the rail read
+  remeasureDescent()
+
   const id = location.hash.slice(1)
   if (id) requestAnimationFrame(() => goToStation(id))
 })
