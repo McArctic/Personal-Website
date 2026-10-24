@@ -33,11 +33,12 @@ export const experience = [
     period: 'Sept 2025 to present',
     kicker: 'Cubesat',
     notes: [
-      "Write flight software in C on NASA's core Flight System for a cubesat under defense research contract, covering telemetry, command routing over the software bus, and payload integration.",
-      'Built test applications that exercise the radio link end to end, confirming health packets reach the ground through the satellite network.',
-      'Bench-test sensor and radio hardware on Linux flight computers, debugging serial links and verifying packet integrity.',
+      "Write flight software in C on NASA's core Flight System, handling telemetry and command messages routed over the cFS Software Bus.",
+      'Built test applications in C that send health packets over UART through the EyeStar radio to verify connectivity with the Globalstar satellite network.',
+      "Integrated message passing between the flight computer and an onboard NVIDIA Jetson using the lab's payload communication API.",
+      'Bench-tested sensor and radio hardware on Linux flight computers, debugging serial links and confirming packet integrity end to end.',
     ],
-    // the interesting details of this one are the ones I can't publish
+    // the hardware is fine to name, what the mission does with it is not
     restricted: 'Mission specifics are restricted.',
     tags: ['C', 'NASA cFS', 'Flight software'],
   },
