@@ -81,6 +81,31 @@ function deform(cursorX, cursorY, strength) {
   )
 }
 
+/* The plot runs on CSS animations, which do not start until the browser
+   first styles these paths, and that waits on the render-blocking webfont
+   stylesheet. Anything timing the plot from mount therefore runs ahead of
+   it, so say when the strokes really start and really finish. */
+const emit = defineEmits(['plotstart', 'plotted'])
+
+function reportPlot(el) {
+  if (!motionAllowed) {
+    emit('plotstart')
+    emit('plotted')
+    return
+  }
+  // the animations only exist once styles have resolved
+  requestAnimationFrame(() => {
+    const running = [...el.querySelectorAll('path')].flatMap((path) => path.getAnimations())
+    if (!running.length) {
+      emit('plotstart')
+      emit('plotted')
+      return
+    }
+    Promise.allSettled(running.map((a) => a.ready)).then(() => emit('plotstart'))
+    Promise.allSettled(running.map((a) => a.finished)).then(() => emit('plotted'))
+  })
+}
+
 const svgEl = shallowRef(null)
 const paths = ref(restingPaths)
 const emphasis = ref(1)
@@ -133,6 +158,7 @@ function onPointerLeave() {
 let section = null
 
 onMounted(() => {
+  if (props.draw) reportPlot(svgEl.value)
   if (!motionAllowed || !props.interactive) return
   // listen on the section, so the contours never take the mouse from the text
   section = svgEl.value.parentElement
