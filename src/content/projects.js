@@ -105,6 +105,7 @@ export const projects = Object.entries(markdownFiles)
       ...meta,
     }
   })
-  .sort((a, b) => b.year - a.year)
+  // what I want seen first, then newest, so a tie on year is not a coin flip
+  .sort((a, b) => Number(b.featured ?? false) - Number(a.featured ?? false) || b.year - a.year)
 
 export const findProject = (slug) => projects.find((project) => project.slug === slug)
