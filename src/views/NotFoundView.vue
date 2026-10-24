@@ -3,16 +3,19 @@ import TrailSign from '@/components/TrailSign.vue'
 </script>
 
 <template>
-  <div class="wrap">
-    <TrailSign />
-    <p class="kicker">404</p>
-    <h1>Off-piste</h1>
-    <p class="lead">Nothing here. <RouterLink to="/">Head back to the base.</RouterLink></p>
+  <div class="page" data-zone="light">
+    <div class="wrap">
+      <TrailSign />
+      <p class="kicker">404</p>
+      <h1>Off-piste</h1>
+      <p class="lead">Nothing here. <RouterLink to="/">Head back to the base.</RouterLink></p>
+    </div>
   </div>
 </template>
 
 <style scoped>
-div {
+.page {
+  background: var(--snow);
   padding-block: clamp(5rem, 14vw, 9rem);
 }
 

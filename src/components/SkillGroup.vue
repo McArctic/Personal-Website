@@ -2,59 +2,43 @@
 defineProps({
   heading: { type: String, required: true },
   items: { type: Array, required: true },
+  step: { type: Number, default: 0 },
 })
+
+const pad = (n) => String(n).padStart(2, '0')
 </script>
 
 <template>
-  <div>
+  <div class="group">
+    <p class="kicker">/ {{ pad(step + 1) }}</p>
     <h3>{{ heading }}</h3>
     <ul>
-      <li v-for="item in items" :key="item.name" :class="{ bare: !item.icon }">
-        <svg v-if="item.icon" viewBox="0 0 24 24" aria-hidden="true">
-          <path :d="item.icon.path" />
-        </svg>
-        {{ item.name }}
-      </li>
+      <li v-for="item in items" :key="item">{{ item }}</li>
     </ul>
   </div>
 </template>
 
 <style scoped>
+.group {
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rule);
+}
+
+.kicker {
+  color: var(--accent);
+  margin-bottom: 0.9rem;
+}
+
 h3 {
-  font-family: var(--mono);
-  font-size: 0.75rem;
-  font-weight: 400;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
+  font-size: 1.125rem;
   margin-bottom: 1rem;
+  color: var(--fg);
 }
 
 ul {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-li {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.4rem 0.75rem 0.4rem 0.6rem;
-  border: 1px solid var(--line);
-  border-radius: 2px;
-  font-size: 0.875rem;
-  background: var(--snow);
-}
-
-/* no logo, so even the padding back out */
-.bare {
-  padding-left: 0.75rem;
-}
-
-svg {
-  width: 1rem;
-  height: 1rem;
-  fill: var(--ink-soft);
+  display: grid;
+  gap: 0.45rem;
+  font-size: 0.9375rem;
+  color: var(--fg-soft);
 }
 </style>
