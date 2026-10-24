@@ -68,6 +68,8 @@ export function watchDescent() {
   if (started++) return
   measure()
   read()
+  // on a first load the router has not put the view on the page yet
+  remeasureDescent()
   addEventListener('scroll', onScroll, { passive: true })
   addEventListener('resize', () => {
     measure()
@@ -80,9 +82,17 @@ export function watchDescent() {
   observer.observe(document.body)
 }
 
-// routes come and go, so the page has to be able to say "the bands changed"
+/* The routed view mounts after App does, so whoever owns the bands has to
+   say when they exist. Safe to call before watchDescent: measuring early
+   just costs a pass that the next one redoes.
+
+   Measures twice on purpose. The first pass is synchronous, because the
+   header picks its colour from this and must not spend a frame light over
+   the dark hero. The second catches offsets that only settle once the web
+   fonts land and the images take up their space. */
 export function remeasureDescent() {
-  if (!started) return
+  measure()
+  read()
   requestAnimationFrame(() => {
     measure()
     read()

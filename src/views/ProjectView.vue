@@ -1,6 +1,7 @@
 <script setup>
-import { computed, ref, watchEffect } from 'vue'
+import { computed, onMounted, ref, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
+import { remeasureDescent } from '@/descent'
 import { findProject } from '@/content/projects'
 import ImageLightbox from '@/components/ImageLightbox.vue'
 import PassPlot from '@/components/PassPlot.vue'
@@ -9,6 +10,9 @@ import TrailMark from '@/components/TrailMark.vue'
 const props = defineProps({ slug: { type: String, required: true } })
 
 const router = useRouter()
+
+// a write-up is one light band, and the header needs to know that
+onMounted(remeasureDescent)
 
 const project = computed(() => findProject(props.slug))
 
