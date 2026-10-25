@@ -18,11 +18,16 @@ const BASE_ELEVATION = 352
 
 const elevation = ref(BASE_ELEVATION)
 const leaving = ref(false)
+const topo = ref(null)
 
 let frameId = 0
 let timers = []
 let backstop = 0
 let startedAt = 0
+/* The exit starts before `leaving` does, because the strokes are given a
+   moment to land first. One flag for "on the way out", one for the fade. */
+let exiting = false
+let gone = false
 
 const ease = (t) => 1 - Math.pow(1 - t, 3)
 
@@ -35,12 +40,19 @@ function climb(now) {
 }
 
 // one way out, whether the timeline ran its course or the visitor cut it short
-function finish() {
-  if (leaving.value) return
-  leaving.value = true
+async function finish() {
+  if (exiting) return
+  exiting = true
   elevation.value = summitElevation
   cancelAnimationFrame(frameId)
   timers.forEach(clearTimeout)
+  timers = []
+
+  // a plot that ran its course settles at once; one cut short lands first
+  await topo.value?.settle()
+  if (gone) return
+
+  leaving.value = true
   timers = [setTimeout(endIntro, 620)]
 }
 
@@ -56,7 +68,7 @@ function onPlotStart() {
 }
 
 function onPlotted() {
-  if (leaving.value) return
+  if (exiting) return
   timers.push(setTimeout(finish, HOLD))
 }
 
@@ -74,6 +86,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  gone = true
   document.body.style.overflow = ''
   cancelAnimationFrame(frameId)
   timers.forEach(clearTimeout)
@@ -87,6 +100,7 @@ onBeforeUnmount(() => {
   <div class="intro dark" :class="{ leaving }">
     <!-- same framing as the hero, so the lines do not jump on handover -->
     <TopoLines
+      ref="topo"
       class="topo"
       align="xMidYMax"
       draw
