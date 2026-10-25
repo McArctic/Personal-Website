@@ -35,13 +35,13 @@ export const profile = {
   },
 
   ski: {
-    note: 'Skiing is the one thing I\'ll rearrange a week for. I film some of it, mostly badly, and put it up along with whatever else I feel like posting.',
+    note: 'In the winter I\'ll find time to ski no matter what else is going on. Most of that is driving out to wherever actually has snow. I film some of it and put it on YouTube, I\'m not any good at the filming part.',
     channel: { label: 'YouTube', href: 'https://www.youtube.com/@MichaelRMelichar' },
     shots: [
       {
         src: '/img/ski/run.jpg',
         alt: 'Me skiing down a tree-lined run',
-        caption: 'Somewhere worth the drive',
+        caption: 'Somewhere with actual snow',
       },
       {
         src: '/img/ski/gear.jpg',
@@ -52,8 +52,8 @@ export const profile = {
   },
 
   contact: {
-    line: 'I\'m looking for internships in flight software, embedded, and anything that ends in hardware doing something.',
-    note: 'Fastest way to reach me is email.',
+    line: 'I\'m looking for internships in flight software and embedded, ideally something aimed at space or defense. The part I actually care about is the code ending up on hardware that does something real, that\'s the whole reason I got into this in the first place.',
+    note: 'Email is the fastest way to reach me, but any of these work.',
   },
 
   links: [
