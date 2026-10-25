@@ -83,28 +83,68 @@ function deform(cursorX, cursorY, strength) {
 
 /* The plot runs on CSS animations, which do not start until the browser
    first styles these paths, and that waits on the render-blocking webfont
-   stylesheet. Anything timing the plot from mount therefore runs ahead of
-   it, so say when the strokes really start and really finish. */
+   stylesheet. Anything timing the plot from mount therefore runs ahead of it.
+
+   So count the animation events instead. The listeners go on in onMounted,
+   before a single stroke can have finished, and animationend bubbles up from
+   the paths, so the count cannot be missed however late the plot begins.
+   Asking getAnimations() on a frame would not do: on a cold load it answers
+   with nothing yet, which reads identically to nothing left to wait for. */
 const emit = defineEmits(['plotstart', 'plotted'])
 
 function reportPlot(el) {
-  if (!motionAllowed) {
+  const total = el.querySelectorAll('path').length
+  if (!motionAllowed || !total) {
     emit('plotstart')
     emit('plotted')
     return
   }
-  // the animations only exist once styles have resolved
-  requestAnimationFrame(() => {
-    const running = [...el.querySelectorAll('path')].flatMap((path) => path.getAnimations())
-    if (!running.length) {
-      emit('plotstart')
-      emit('plotted')
-      return
-    }
-    Promise.allSettled(running.map((a) => a.ready)).then(() => emit('plotstart'))
-    Promise.allSettled(running.map((a) => a.finished)).then(() => emit('plotted'))
+
+  let ended = 0
+  el.addEventListener('animationstart', () => emit('plotstart'), { once: true })
+  el.addEventListener('animationend', () => {
+    if (++ended === total) emit('plotted')
   })
 }
+
+/* A plot can be cut short: the visitor skips it, or a backstop decides it has
+   waited long enough. The strokes do not care, they keep drawing at their own
+   pace, so whatever is fading out is a field of half-drawn contours full of
+   breaks. Race them home first instead, and the map goes out whole.
+
+   One playback rate for all of them, so the climb up the mountain survives
+   the compression rather than every line snapping shut at once. */
+const SETTLE = 220
+
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
+function settle() {
+  const unfinished = (svgEl.value?.getAnimations({ subtree: true }) ?? []).filter(
+    (animation) => animation.playState !== 'finished',
+  )
+  if (!unfinished.length) return Promise.resolve()
+
+  const left = (animation) =>
+    animation.effect.getComputedTiming().endTime - (animation.currentTime ?? 0)
+  const longest = Math.max(...unfinished.map(left))
+  if (longest > SETTLE) {
+    const rate = longest / SETTLE
+    unfinished.forEach((animation) => {
+      animation.playbackRate = rate
+    })
+  }
+
+  /* A tab nobody is painting never advances its animations at all, so the
+     wait is capped and anything still short of the end is simply put there. */
+  const landed = Promise.all(unfinished.map((animation) => animation.finished.catch(() => {})))
+  return Promise.race([landed, wait(SETTLE + 120)]).then(() => {
+    unfinished.forEach((animation) => {
+      if (animation.playState !== 'finished') animation.finish()
+    })
+  })
+}
+
+defineExpose({ settle })
 
 const svgEl = shallowRef(null)
 const paths = ref(restingPaths)
@@ -155,10 +195,30 @@ function onPointerLeave() {
   startLoop()
 }
 
+/* Chromium measures a dashed path in user units but strokes it in screen
+   units when vector-effect is non-scaling-stroke, so the dash falls 1/scale
+   short and every contour stops before its end. Above a scale of 1 - a wide
+   window, a display at 125% - the plot visibly never closes. Firefox gets
+   this right, which is why it only shows up in Chrome.
+
+   The plotted lines therefore stroke in plain user units, where the dash is
+   exact, and give back the width the vector effect was there for by dividing
+   it by the scale the viewBox is drawn at. Same 1px line, honest dashes. */
+const drawScale = ref(1)
+
+function measureScale() {
+  const matrix = svgEl.value?.getScreenCTM()
+  if (matrix?.a) drawScale.value = matrix.a
+}
+
 let section = null
 
 onMounted(() => {
-  if (props.draw) reportPlot(svgEl.value)
+  if (props.draw) {
+    measureScale()
+    addEventListener('resize', measureScale)
+    reportPlot(svgEl.value)
+  }
   if (!motionAllowed || !props.interactive) return
   // listen on the section, so the contours never take the mouse from the text
   section = svgEl.value.parentElement
@@ -167,6 +227,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  removeEventListener('resize', measureScale)
   if (frameId) cancelAnimationFrame(frameId)
   section?.removeEventListener('pointermove', onPointerMove)
   section?.removeEventListener('pointerleave', onPointerLeave)
@@ -181,7 +242,11 @@ onBeforeUnmount(() => {
     aria-hidden="true"
     focusable="false"
     :class="{ plotting: draw }"
-    :style="{ '--topo-emphasis': emphasis, '--topo-draw': `${strokeTime}s` }"
+    :style="{
+      '--topo-emphasis': emphasis,
+      '--topo-draw': `${strokeTime}s`,
+      '--topo-scale': drawScale,
+    }"
   >
     <path
       v-for="(path, i) in paths"
@@ -212,6 +277,9 @@ svg {
 
 /* normalised by pathLength, so every contour plots in the same time */
 .plotting path {
+  /* the dash and the vector effect do not mix, see measureScale */
+  vector-effect: none;
+  stroke-width: calc(1px / var(--topo-scale, 1));
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
   animation: plot var(--topo-draw, 1.6s) cubic-bezier(0.33, 0.8, 0.4, 1) forwards;

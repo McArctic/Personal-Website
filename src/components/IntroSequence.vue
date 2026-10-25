@@ -7,16 +7,27 @@ import { endIntro } from '@/intro'
 const PLOT_TIME = 1.5
 // a beat on the finished map before it hands over
 const HOLD = 650
-// if the plot never reports back, leave anyway rather than trap anyone here
-const BACKSTOP = 6000
+/* Backstops, so a browser that will not animate cannot trap anyone. One for
+   a plot that never starts at all, and once it has started, one giving it its
+   own length plus room for a slow machine. A single timer from mount cannot
+   do both: long enough to survive a slow start is long enough to strand
+   someone when nothing is coming. */
+const NEVER_STARTED = 5000
+const SLOW_MARGIN = 3000
 const BASE_ELEVATION = 352
 
 const elevation = ref(BASE_ELEVATION)
 const leaving = ref(false)
+const topo = ref(null)
 
 let frameId = 0
 let timers = []
+let backstop = 0
 let startedAt = 0
+/* The exit starts before `leaving` does, because the strokes are given a
+   moment to land first. One flag for "on the way out", one for the fade. */
+let exiting = false
+let gone = false
 
 const ease = (t) => 1 - Math.pow(1 - t, 3)
 
@@ -29,12 +40,19 @@ function climb(now) {
 }
 
 // one way out, whether the timeline ran its course or the visitor cut it short
-function finish() {
-  if (leaving.value) return
-  leaving.value = true
+async function finish() {
+  if (exiting) return
+  exiting = true
   elevation.value = summitElevation
   cancelAnimationFrame(frameId)
   timers.forEach(clearTimeout)
+  timers = []
+
+  // a plot that ran its course settles at once; one cut short lands first
+  await topo.value?.settle()
+  if (gone) return
+
+  leaving.value = true
   timers = [setTimeout(endIntro, 620)]
 }
 
@@ -43,10 +61,14 @@ function onPlotStart() {
   startedAt = performance.now()
   cancelAnimationFrame(frameId)
   frameId = requestAnimationFrame(climb)
+
+  clearTimeout(backstop)
+  backstop = setTimeout(finish, PLOT_TIME * 1000 + SLOW_MARGIN)
+  timers.push(backstop)
 }
 
 function onPlotted() {
-  if (leaving.value) return
+  if (exiting) return
   timers.push(setTimeout(finish, HOLD))
 }
 
@@ -55,7 +77,8 @@ onMounted(() => {
   document.body.style.overflow = 'hidden'
   startedAt = performance.now()
   frameId = requestAnimationFrame(climb)
-  timers.push(setTimeout(finish, BACKSTOP))
+  backstop = setTimeout(finish, NEVER_STARTED)
+  timers.push(backstop)
 
   addEventListener('pointerdown', finish)
   addEventListener('keydown', finish)
@@ -63,6 +86,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  gone = true
   document.body.style.overflow = ''
   cancelAnimationFrame(frameId)
   timers.forEach(clearTimeout)
@@ -76,6 +100,7 @@ onBeforeUnmount(() => {
   <div class="intro dark" :class="{ leaving }">
     <!-- same framing as the hero, so the lines do not jump on handover -->
     <TopoLines
+      ref="topo"
       class="topo"
       align="xMidYMax"
       draw
