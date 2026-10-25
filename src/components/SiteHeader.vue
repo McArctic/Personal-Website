@@ -392,6 +392,12 @@ header.light .menu a {
   border-top-color: var(--line);
 }
 
+/* the panel clips itself while it opens, so a ring standing off the row
+   loses its top edge against the first junction. It goes inside instead. */
+.menu a:focus-visible {
+  outline-offset: -3px;
+}
+
 .menu a.on {
   opacity: 1;
 }
