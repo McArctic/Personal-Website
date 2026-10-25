@@ -39,7 +39,12 @@ function measure() {
   }))
 }
 
-const zoneAt = (y) => zoned.findLast((el) => el.offsetTop <= y)?.dataset.zone ?? 'light'
+/* Nothing sits above the first band, so a probe that lands over it borrows
+   that band's zone instead of falling back. Rubber-banding past the top puts
+   it there on every upward flick, and the fallback turned the header white
+   over the dark hero for as long as the bounce lasted. */
+const zoneAt = (y) =>
+  (zoned.findLast((el) => el.offsetTop <= y) ?? zoned[0])?.dataset.zone ?? 'light'
 
 function read() {
   frame = 0
