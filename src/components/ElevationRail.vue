@@ -14,7 +14,7 @@ const elevation = computed(() =>
 </script>
 
 <template>
-  <aside v-if="stations.length" class="rail" :class="railZone" aria-hidden="true">
+  <aside v-if="stations.length" class="rail" :class="`over-${railZone}`" aria-hidden="true">
     <p class="readout">{{ elevation }}<span>m</span></p>
 
     <div class="track">
@@ -59,8 +59,13 @@ const elevation = computed(() =>
   --rail-lit: #9fb4c4;
 }
 
-/* against a light band the rail has to darken to stay readable */
-.rail.light {
+/* against a light band the rail has to darken to stay readable. The zone goes
+   on as over-light rather than as the bare class, because .dark is the band
+   utility and it paints a background as well as remapping the tokens: worn by
+   the rail that put a 32px slab of summit over the valley for as long as the
+   two shared a screen. The rail is furniture over the bands, not one of
+   them, and it reads the zone for its ink alone. */
+.rail.over-light {
   --rail-dim: #ccd4d9;
   --rail-lit: #5a636b;
 }
