@@ -24,6 +24,13 @@
   --blue: #2e5f80;
   --diamond: #111418;
 
+  /* The contours used to be drawn in the accent, which put the same blue
+     behind everything the accent was meant to pick out. They are line work,
+     so they take ink instead and each zone supplies its own: pencil on the
+     valley's paper, chalk on the summit's dark. That leaves the blue free
+     to mean something again. */
+  --topo-ink: var(--ink);
+
   --mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', 'SF Mono', Consolas, monospace;
   --gutter: clamp(1.25rem, 5vw, 3.5rem);
   --measure: 40rem;
@@ -51,6 +58,7 @@
   --rule: var(--summit-line);
   --accent: var(--alpine-lit);
   --diamond: #eff4f8;
+  --topo-ink: var(--summit-ink);
   --topo-opacity: 0.2;
 
   background: var(--bg);

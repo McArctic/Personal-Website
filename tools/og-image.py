@@ -26,8 +26,10 @@ VIEWBOX = (1280, 900)
 SUMMIT = (12, 17, 22)
 SNOW = (239, 244, 248)
 ALPINE = (124, 180, 217)
-# the contours sit at about a fifth opacity on the site, flattened here
-CONTOUR = (34, 50, 61)
+# The contours sit at about a fifth opacity on the site, flattened here.
+# They are drawn in the summit ink rather than the accent, so that the blue
+# on this card is only ever the kicker and the full stop.
+CONTOUR = (57, 62, 67)
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 FACES = pathlib.Path(r"C:\Windows\Fonts")
