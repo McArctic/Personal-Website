@@ -268,7 +268,7 @@ svg {
   display: block;
   width: 100%;
   height: 100%;
-  color: var(--accent);
+  color: var(--topo-ink, var(--accent));
   /* callers set --topo-opacity, not opacity */
   opacity: calc(var(--topo-opacity, 0.13) * var(--topo-emphasis, 1));
   shape-rendering: geometricPrecision;
