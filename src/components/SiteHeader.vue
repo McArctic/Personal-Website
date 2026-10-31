@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router'
 import { activeStation, goToStation, headerZone, scrolled, stations } from '@/descent'
 
 const nav = [
-  { id: 'work', label: 'Work' },
+  { id: 'work', label: 'Projects' },
   { id: 'about', label: 'About' },
   { id: 'experience', label: 'Experience' },
   { id: 'contact', label: 'Contact' },
@@ -68,7 +68,6 @@ onBeforeUnmount(() => {
   <header :class="[headerZone, { lifted: scrolled, open }]">
     <div class="wrap bar">
       <RouterLink to="/" class="mark" @click="close">
-        <span class="mono">mm<span class="dot">.</span></span>
         <span class="full">Michael Melichar</span>
       </RouterLink>
 
@@ -162,32 +161,15 @@ header.light.lifted {
 }
 
 .mark {
-  display: flex;
-  align-items: baseline;
-  gap: 0.6rem;
   text-decoration: none;
   white-space: nowrap;
 }
 
-.mono {
-  font-family: var(--mono);
-  font-weight: 500;
-  font-size: 1.05rem;
-  letter-spacing: -0.04em;
-}
-
-.dot {
-  color: var(--alpine-lit);
-}
-
-header.light .dot {
-  color: var(--alpine);
-}
-
+/* the name is the mark now that the monogram has gone, so it carries full
+   ink instead of the 0.72 it wore as the quieter half of a pair */
 .full {
   font-size: 0.9375rem;
   font-weight: 500;
-  opacity: 0.72;
 }
 
 nav {

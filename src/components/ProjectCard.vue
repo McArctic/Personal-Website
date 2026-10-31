@@ -5,11 +5,7 @@ import TrailMark from '@/components/TrailMark.vue'
 
 const props = defineProps({
   project: { type: Object, required: true },
-  index: { type: Number, required: true },
-  total: { type: Number, required: true },
 })
-
-const pad = (n) => String(n).padStart(2, '0')
 
 // a cover is either a file, a named drawing, or nothing at all yet
 const isPlot = props.project.cover === 'pass-plot'
@@ -25,9 +21,8 @@ const isImage = Boolean(props.project.cover) && !isPlot
       <TopoLines v-else class="fallback" align="xMinYMin" :interactive="false" />
     </div>
 
-    <p class="index kicker">
-      {{ pad(index + 1) }} <span>/ {{ pad(total) }}</span>
-      <span v-if="project.status === 'Back burner'" class="paused">Back burner</span>
+    <p v-if="project.status === 'Back burner'" class="flags kicker">
+      <span class="paused">Back burner</span>
     </p>
 
     <h3 class="title">
@@ -96,15 +91,10 @@ const isImage = Boolean(props.project.cover) && !isPlot
   --topo-opacity: 0.3;
 }
 
-.index {
+.flags {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
   margin-bottom: 0.7rem;
-}
-
-.index span {
-  opacity: 0.55;
 }
 
 .paused {

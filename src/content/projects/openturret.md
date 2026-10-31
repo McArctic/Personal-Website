@@ -9,63 +9,32 @@ repo: https://github.com/McArctic/OpenTurret
 status: Back burner
 ---
 
-This has been a dream project of mine for a while. I wanted more hands-on hardware
-and vision model experience, and building a turret out of an old airsoft gun seemed
-like the obvious way to get both. The idea: something that can find a moving target,
-work out where it's actually going to be, and put a round there instead of where the
-target used to be.
+OpenTurret is a two-axis turret built on an old airsoft gun that aims at a moving
+target. I started it to get hands-on with hardware and vision models at the same time.
 
-## The plan
+The work splits across two computers. A Raspberry Pi 5 runs the vision model and the
+prediction math, works out where the target is heading, and sends over a pair of angles.
+The Pico does the rest: microstepping, and driving the steppers to those angles.
 
-The system splits across two computers. A Raspberry Pi 5 runs the vision model and
-does the prediction math, figuring out where a target is heading and what angle the
-turret needs to hit it. All the Pi sends over is a pair of angles. The Pico is the
-driver. Its only job is turning those angles into actual motor movement: handling
-microstepping, moving the steppers, and getting them exactly where they're told to go.
+## Hardware
 
-## Where it's at right now
+A Pico driving TMC2209s over UART. Pin mode is simpler to wire but gives you two
+microstep settings and a potentiometer for current; UART gives finer microstepping,
+current in software, and lets me change either on the fly.
 
-Right now I'm just writing the Pico side, the stepper driver. I've got the Pico
-wired up to a TMC2209 stepper driver, and I'm working on the communication layer
-between them over UART.
+The TMC2209 has pins labeled RX and TX, but only RX is real and it carries both
+directions on one wire. The Pico's TX goes into it through a 1k resistor, the Pico's RX
+connects to the same pin directly, and anything sent comes back as an echo that has to
+be cleared before the driver's reply can be read. The register values were garbage after
+that, which turned out to be my own memcpy assuming little-endian when the driver is
+big-endian.
 
 ![A Pico and a TMC2209 on a breadboard with a scope probe clipped on](/img/openturret/driver-bench.jpg#tall) ![An oscilloscope showing a square wave at 998 Hz and 50 percent duty](/img/openturret/step-pulse.jpg "Pico into a TMC2209, and the step output coming off it at 998 Hz")
 
-## Why UART instead of just pins
+## Status
 
-The TMC2209 can run in two modes. Pure pin mode is simpler to wire, but you're stuck
-with only two microstep options, and current control means physically turning a
-potentiometer on the board. UART mode opens up way more microstep resolution, lets
-you set current in software instead of by hand, and lets you change any of it on the
-fly instead of committing to a fixed setup. For a project where I want to actually
-tune things as I go, that flexibility was worth the extra wiring complexity.
+The Pico side is the only part built. The vision model, the prediction math, the link
+between the Pi and the Pico, and the mount the whole thing sits on are all still ahead.
 
-## The UART figured itself out the hard way
-
-The TMC2209 has pins labeled RX and TX, so I wired it up the obvious way. Turned out
-that was wrong, the "TX" pin doesn't actually do anything. The driver only has one
-real UART pin, the one labeled RX, and it's meant to carry both directions on a
-single wire.
-
-So the actual wiring is: the Pico's TX goes through a 1k ohm resistor into that one
-UART pin, and the Pico's RX connects to the same pin directly, no resistor. Once I
-had that wired correctly, a new problem showed up. Since it's a single wire,
-anything I send comes right back to my own RX pin as an echo. I had to clear that
-echo out before I could actually read whatever the driver sent back.
-
-## Then the data was wrong
-
-Once I could talk to the driver, I was getting garbage back for its register values.
-I put an oscilloscope on the line to check the bits were even moving correctly, and
-they were, the driver was responding fine. The actual bug was in my own code, I was
-using memcpy assuming little-endian, and the driver expects big-endian. Fixed that
-and the data started coming back correctly.
-
-## Still ahead
-
-The vision model, the prediction math, and the link between the Pi and the Pico are
-all still unbuilt. So is the mount the whole thing sits on.
-
-This one is on the back burner for now. The TMC2209 work carries straight over to
-[Overpass](/projects/overpass), which needs the same two axes and the same drivers,
-just pointed at the sky instead of across a room.
+On the back burner for now. The TMC2209 work carries straight over to
+[Overpass](/projects/overpass), which needs the same two axes and the same drivers.

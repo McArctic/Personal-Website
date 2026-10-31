@@ -2,15 +2,11 @@
 defineProps({
   heading: { type: String, required: true },
   items: { type: Array, required: true },
-  step: { type: Number, default: 0 },
 })
-
-const pad = (n) => String(n).padStart(2, '0')
 </script>
 
 <template>
   <div class="group">
-    <p class="kicker">/ {{ pad(step + 1) }}</p>
     <h3>{{ heading }}</h3>
     <ul>
       <li v-for="item in items" :key="item">{{ item }}</li>
@@ -22,11 +18,6 @@ const pad = (n) => String(n).padStart(2, '0')
 .group {
   padding-top: 1.25rem;
   border-top: 1px solid var(--rule);
-}
-
-.kicker {
-  color: var(--accent);
-  margin-bottom: 0.9rem;
 }
 
 h3 {

@@ -72,7 +72,7 @@ const elevation = computed(() =>
 
 /* The labels run to the right of the rail, into the page margin, so the rail
    only appears once that margin can hold the longest one. Measured at this
-   width there is about 19px between the longest label and the text column.
+   width there is about 41px between the longest label and the text column.
    Lengthen a station name and that is the budget it has to fit in. */
 @media (min-width: 88rem) {
   .rail {
