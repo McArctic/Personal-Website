@@ -5,19 +5,11 @@ import ProjectCard from '@/components/ProjectCard.vue'
 import ProseText from '@/components/ProseText.vue'
 import SkillGroup from '@/components/SkillGroup.vue'
 import TopoLines from '@/components/TopoLines.vue'
-import TrailMark from '@/components/TrailMark.vue'
 import { profile } from '@/content/profile'
 import { projects } from '@/content/projects'
 import { skills } from '@/content/skills'
 import { goToStation, remeasureDescent } from '@/descent'
 import { introDone } from '@/intro'
-
-const legend = [
-  { shape: 'square', text: 'Substantial build' },
-  { shape: 'diamond', text: 'Hardest things I\'ve built' },
-]
-
-const pad = (n) => String(n).padStart(2, '0')
 
 const hasShots = computed(() => profile.ski.shots.length > 0)
 
@@ -48,16 +40,16 @@ onMounted(() => {
 
       <div class="cta">
         <a class="button primary" href="#work" @click.prevent="goToStation('work')"
-          >View work <span aria-hidden="true">↓</span></a
+          >View work</a
         >
         <a class="button" href="#contact" @click.prevent="goToStation('contact')"
-          >Get in touch <span aria-hidden="true">→</span></a
+          >Get in touch</a
         >
       </div>
     </div>
 
     <p class="kicker descend" :class="{ ready: introDone }" aria-hidden="true">
-      Scroll to descend
+      Scroll for more
       <span class="drop" />
     </p>
   </section>
@@ -66,8 +58,7 @@ onMounted(() => {
   <section id="about" class="band dark" data-zone="dark" data-station="About">
     <div class="wrap">
       <header v-rise class="band-head">
-        <p class="kicker">01 / About</p>
-        <h2>A bit about <span class="accent">me.</span></h2>
+        <h2>About.</h2>
       </header>
 
       <div class="about-grid">
@@ -84,18 +75,13 @@ onMounted(() => {
       </div>
 
       <div v-rise class="columns">
-        <SkillGroup
-          v-for="(group, i) in skills"
-          :key="group.heading"
-          v-bind="group"
-          :step="i"
-        />
+        <SkillGroup v-for="group in skills" :key="group.heading" v-bind="group" />
       </div>
     </div>
   </section>
 
   <!-- work ------------------------------------------------------------ -->
-  <section id="work" class="band" data-zone="light" data-station="Work">
+  <section id="work" class="band" data-zone="light" data-station="Projects">
     <p class="treeline" aria-hidden="true">
       <span>Treeline</span>
       <span class="hair" />
@@ -104,13 +90,7 @@ onMounted(() => {
 
     <div class="wrap">
       <header v-rise class="band-head">
-        <p class="kicker">02 / Selected work</p>
-        <h2>Things worth <span class="accent">explaining.</span></h2>
-        <ul class="legend">
-          <li v-for="mark in legend" :key="mark.shape">
-            <TrailMark :shape="mark.shape" />{{ mark.text }}
-          </li>
-        </ul>
+        <h2>Projects.</h2>
       </header>
 
       <div class="cards">
@@ -119,8 +99,6 @@ onMounted(() => {
           :key="project.slug"
           v-rise="i % 2"
           :project="project"
-          :index="i"
-          :total="projects.length"
         />
       </div>
     </div>
@@ -130,8 +108,7 @@ onMounted(() => {
   <section id="experience" class="band shaded" data-zone="light" data-station="Experience">
     <div class="wrap">
       <header v-rise class="band-head">
-        <p class="kicker">03 / Background</p>
-        <h2>Where I've <span class="accent">worked.</span></h2>
+        <h2>Experience.</h2>
       </header>
 
       <div v-rise>
@@ -141,18 +118,16 @@ onMounted(() => {
   </section>
 
   <!-- now -------------------------------------------------------------- -->
-  <section id="now" class="band" data-zone="light" data-station="Now">
+  <section id="now" class="band" data-zone="light" data-station="Working on">
     <div class="wrap">
       <div class="now-grid">
         <header v-rise class="band-head">
-          <p class="kicker">04 / Currently</p>
-          <h2>On the bench <span class="accent">now.</span></h2>
+          <h2>What I am working on.</h2>
           <p class="note">{{ profile.now.note }}</p>
         </header>
 
         <ul v-rise="1" class="now-list">
           <li v-for="(item, i) in profile.now.items" :key="i">
-            <span class="kicker count">{{ pad(i + 1) }}</span>
             <ProseText :text="item" />
           </li>
         </ul>
@@ -161,11 +136,10 @@ onMounted(() => {
   </section>
 
   <!-- off the clock ----------------------------------------------------- -->
-  <section id="ski" class="band shaded" data-zone="light" data-station="Off the clock">
+  <section id="ski" class="band shaded" data-zone="light" data-station="Personal">
     <div class="wrap">
       <header v-rise class="band-head">
-        <p class="kicker">05 / Off the clock</p>
-        <h2>The rest of the <span class="accent">mountain.</span></h2>
+        <h2>Personal.</h2>
       </header>
 
       <div class="ski-grid">
@@ -196,8 +170,7 @@ onMounted(() => {
 
     <div class="wrap">
       <header v-rise class="band-head">
-        <p class="kicker">06 / Contact</p>
-        <h2>Get in <span class="accent">touch.</span></h2>
+        <h2>Contact.</h2>
       </header>
 
       <div v-rise="1" class="base-grid">
@@ -416,18 +389,6 @@ h1 {
   background: var(--line);
 }
 
-.legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.25rem;
-  margin-top: 1.25rem;
-  font-family: var(--mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--fg-faint);
-}
-
 .cards {
   display: grid;
   gap: clamp(2.5rem, 5vw, 3.5rem) 2.5rem;
@@ -474,17 +435,9 @@ h1 {
 }
 
 .now-list li {
-  display: grid;
-  grid-template-columns: 2.25rem minmax(0, 1fr);
-  gap: 0.2rem;
-  align-items: baseline;
   padding-bottom: 1.1rem;
   border-bottom: 1px solid var(--rule);
   color: var(--fg-body);
-}
-
-.count {
-  color: var(--accent);
 }
 
 .now-list li:last-child {

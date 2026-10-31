@@ -2,17 +2,20 @@
 
     python tools/favicon.py
 
-The mark is the site's monogram: a lowercase "mm" whose full stop is a black
-diamond, the hardest trail rating on a map. Ski signage is a black diamond on
-white, so the tile is snow and the marks are ink.
+The mark is a double black diamond, the hardest rating on a trail map and the
+same shape the project ratings already use, so the tab icon reads as the site
+without spelling anything out. Ski signage is black on white, so the tile is
+snow and the diamonds are ink.
 
-Everything is drawn as rectangles and a polygon rather than set in a typeface,
-because a favicon has no webfont to fall back on and the system sans differs
-on every machine.
+Everything is drawn as polygons rather than set in a typeface, because a
+favicon has no webfont to fall back on and the system sans differs on every
+machine.
 
-At 16 px the two m's collapse into four grey smudges, so that size in the .ico
-carries the diamond on its own. It is the same mark the nav, the rail and the
-project ratings already use, so it still reads as the site.
+The gap between the two diamonds is the whole mark: close it and the pair
+reads as one bowtie. It is sized so that at 16 px, the smallest frame in the
+.ico, it still lands on a pixel of its own rather than dissolving into the
+downsample. That is what fixes RADIUS and GAP below — widen the diamonds and
+the gap goes with them.
 
 Needs Pillow. Writes public/favicon.ico, public/favicon.svg and
 public/apple-touch-icon.png.
@@ -30,79 +33,51 @@ SUPERSAMPLE = 16
 SNOW = (251, 252, 253, 255)
 INK = (17, 20, 24, 255)
 
-STEM = 5  # width of one vertical in an m
-GAP = 2  # space between those verticals
-BAR = 5  # thickness of the bar across the top of an m
-XHEIGHT = 19
-WORD_GAP = 5  # between the two m's
-STOP_GAP = 5  # between the second m and the diamond
-RADIUS = 5.5  # half the diagonal of the diamond
+RADIUS = 13  # half the diagonal of one diamond
+GAP = 4  # between the two facing vertices; 1 px once scaled to 16
 CORNER = 10  # rounding on the tile
 
-M_WIDTH = STEM * 3 + GAP * 2
-CONTENT = M_WIDTH * 2 + WORD_GAP + STOP_GAP + RADIUS * 2
+CONTENT = RADIUS * 4 + GAP
 
 OUT = pathlib.Path(__file__).resolve().parents[1] / "public"
 
 
 def layout():
-    """Rectangles and one diamond, in the 64 unit box, centred."""
-    left = (BOX - CONTENT) / 2
-    top = (BOX - XHEIGHT) / 2
-    bottom = top + XHEIGHT
+    """The two diamonds, in the 64 unit box, centred."""
+    first = (BOX - CONTENT) / 2 + RADIUS
+    cy = BOX / 2
 
-    rects = []
-    for m in range(2):
-        x = left + m * (M_WIDTH + WORD_GAP)
-        # the bar closes the top, the three verticals hang off it
-        rects.append((x, top, x + M_WIDTH, top + BAR))
-        for stem in range(3):
-            sx = x + stem * (STEM + GAP)
-            rects.append((sx, top, sx + STEM, bottom))
-
-    cx = left + M_WIDTH * 2 + WORD_GAP + STOP_GAP + RADIUS
-    cy = bottom - RADIUS
-    diamond = [(cx, cy - RADIUS), (cx + RADIUS, cy), (cx, cy + RADIUS), (cx - RADIUS, cy)]
-    return rects, diamond
+    return [
+        [(cx, cy - RADIUS), (cx + RADIUS, cy), (cx, cy + RADIUS), (cx - RADIUS, cy)]
+        for cx in (first, first + RADIUS * 2 + GAP)
+    ]
 
 
-def render(size, *, mark=True, tile=True):
-    """One square icon. mark=False leaves just the diamond."""
+def render(size):
+    """One square icon."""
     scale = size * SUPERSAMPLE / BOX
     big = Image.new("RGBA", (size * SUPERSAMPLE,) * 2, (0, 0, 0, 0))
     draw = ImageDraw.Draw(big)
     up = lambda v: v * scale
 
-    if tile:
-        draw.rounded_rectangle(
-            [0, 0, size * SUPERSAMPLE - 1, size * SUPERSAMPLE - 1],
-            radius=up(CORNER),
-            fill=SNOW,
-        )
+    draw.rounded_rectangle(
+        [0, 0, size * SUPERSAMPLE - 1, size * SUPERSAMPLE - 1],
+        radius=up(CORNER),
+        fill=SNOW,
+    )
 
-    rects, diamond = layout()
-    if mark:
-        for x0, y0, x1, y1 in rects:
-            draw.rectangle([up(x0), up(y0), up(x1), up(y1)], fill=INK)
+    for diamond in layout():
         draw.polygon([(up(x), up(y)) for x, y in diamond], fill=INK)
-    else:
-        # the diamond alone, grown to carry the whole tile
-        cx = cy = size * SUPERSAMPLE / 2
-        r = up(RADIUS) * 2.6
-        draw.polygon([(cx, cy - r), (cx + r, cy), (cx, cy + r), (cx - r, cy)], fill=INK)
 
     return big.resize((size, size), Image.LANCZOS)
 
 
 def svg():
-    rects, diamond = layout()
     r = lambda v: round(v, 2)
     shapes = [
-        f'<rect x="{r(x0)}" y="{r(y0)}" width="{r(x1 - x0)}" height="{r(y1 - y0)}"/>'
-        for x0, y0, x1, y1 in rects
+        f'<polygon points="{" ".join(f"{r(x)},{r(y)}" for x, y in diamond)}"/>'
+        for diamond in layout()
     ]
-    points = " ".join(f"{r(x)},{r(y)}" for x, y in diamond)
-    shapes.append(f'<polygon points="{points}"/>')
     marks = "\n    ".join(shapes)
     return (
         f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {BOX} {BOX}">\n'
@@ -115,8 +90,9 @@ def svg():
 def write_ico(path, frames):
     """Pack the frames into one .ico, each stored as a PNG.
 
-    Pillow's own ICO writer resizes a single source to the sizes you ask for,
-    which is no good here: the 16 is a different drawing, not a smaller one.
+    Pillow's own ICO writer resizes a single source to the sizes you ask for.
+    Each frame here is drawn at its own size instead, so the supersampling and
+    the rounding of the tile land correctly at every one.
     """
     blobs = []
     for frame in frames:
@@ -141,10 +117,15 @@ def main():
     (OUT / "favicon.svg").write_text(svg(), encoding="utf-8")
 
     # the .ico holds all three, and the browser picks by the size it needs
-    tiny = render(16, mark=False)
-    write_ico(OUT / "favicon.ico", [tiny, render(32), render(48)])
+    write_ico(OUT / "favicon.ico", [render(16), render(32), render(48)])
 
-    render(180).convert("RGB").save(OUT / "apple-touch-icon.png", optimize=True)
+    # the tile's corners are transparent, and iOS masks the icon with its own
+    # rounding, so dropping the alpha would paint those corners black on any
+    # surface that does not mask. Flatten onto the snow instead.
+    apple = Image.new("RGB", (180, 180), SNOW[:3])
+    tile = render(180)
+    apple.paste(tile, mask=tile)
+    apple.save(OUT / "apple-touch-icon.png", optimize=True)
 
     print("wrote favicon.svg, favicon.ico, apple-touch-icon.png")
 

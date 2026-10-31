@@ -3,11 +3,11 @@ export const profile = {
   role: 'Flight software & avionics',
   location: 'Buffalo, NY',
   marker: { coords: '42.89°N 78.88°W', elevation: '183 m' },
-  lead: 'Computer science student at the University at Buffalo. I do a bit of everything, from embedded systems to general software and personal projects. But if you get me talking, it\'s probably about hardware-level code for space and defense.',
+  lead: 'Computer science student at the University at Buffalo. I do a bit of everything, from embedded systems to general software and personal projects. Mostly I want to be writing hardware-level code for space and defense.',
   about: [
     'I write software that runs close to the hardware, most of it aimed at space and defense. At the UB Nanosatellite Laboratory I write flight software for cubesats for defense research, and at UB SEDS I work on our hybrid rocket for IREC. Last competition I handled ground station systems, things like solenoid drivers for filling the nitrous, safety monitoring, and pulling the umbilical before launch. I really just love building things that are physical. I get so much joy from watching something I worked on at a laptop become real.',
     'Space and defense really pull me in for the same reason. Both end in something tangible, and I get to watch what I do contribute to something bigger. I also just love being at the bleeding edge.',
-    'I\'ve always loved software and computer science, outside of school I\'ve built more personal projects than I can count, most lost to time by now. Right now I\'m building [a mount that tracks satellites as they pass overhead](/projects/overpass), because trying to follow one by hand in the cold did not go well. Another one of my bigger projects is my [Minecraft server](/projects/create-civilization), which I\'ve been running since 2024 with 680 members and counting, that one\'s been such a journey. Then in the winter I ALWAYS try to find time to ski.',
+    'I\'ve always loved software and computer science, outside of school I\'ve built more personal projects than I can count, most lost to time by now. Right now I\'m building [a mount that tracks satellites as they pass overhead](/projects/overpass), because trying to follow one by hand in the cold did not go well. Another one of my bigger projects is my [Minecraft server](/projects/create-civilization), which I\'ve been running since 2024 with 680 members and counting. Then in the winter I ALWAYS try to find time to ski.',
   ],
 
   // the two benches the about section is actually describing
@@ -35,7 +35,7 @@ export const profile = {
   },
 
   ski: {
-    note: 'In the winter I\'ll find time to ski no matter what else is going on. Most of that is driving out to wherever actually has snow. I film some of it and put it on YouTube, I\'m not any good at the filming part.',
+    note: 'In the winter I\'ll find time to ski no matter what else is going on. Most of that is driving out to wherever actually has snow. I film some of it and put it on YouTube.',
     channel: { label: 'YouTube', href: 'https://www.youtube.com/@MichaelRMelichar' },
     shots: [
       {
@@ -52,7 +52,7 @@ export const profile = {
   },
 
   contact: {
-    line: 'I\'m looking for internships in flight software and embedded, ideally something aimed at space or defense. The part I actually care about is the code ending up on hardware that does something real, that\'s the whole reason I got into this in the first place.',
+    line: 'I\'m looking for internships in flight software and embedded, ideally something aimed at space or defense. The part I actually care about is the code ending up on hardware that does something physical.',
     note: 'Email is the fastest way to reach me, but any of these work.',
   },
 

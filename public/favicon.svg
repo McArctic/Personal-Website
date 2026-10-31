@@ -1,14 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <rect width="64" height="64" rx="10" fill="#fbfcfd"/>
   <g fill="#111418">
-    <rect x="2.5" y="22.5" width="19.0" height="5.0"/>
-    <rect x="2.5" y="22.5" width="5.0" height="19.0"/>
-    <rect x="9.5" y="22.5" width="5.0" height="19.0"/>
-    <rect x="16.5" y="22.5" width="5.0" height="19.0"/>
-    <rect x="26.5" y="22.5" width="19.0" height="5.0"/>
-    <rect x="26.5" y="22.5" width="5.0" height="19.0"/>
-    <rect x="33.5" y="22.5" width="5.0" height="19.0"/>
-    <rect x="40.5" y="22.5" width="5.0" height="19.0"/>
-    <polygon points="56.0,30.5 61.5,36.0 56.0,41.5 50.5,36.0"/>
+    <polygon points="17.0,19.0 30.0,32.0 17.0,45.0 4.0,32.0"/>
+    <polygon points="47.0,19.0 60.0,32.0 47.0,45.0 34.0,32.0"/>
   </g>
 </svg>

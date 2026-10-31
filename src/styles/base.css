@@ -226,15 +226,6 @@ h3 {
   margin-bottom: clamp(2rem, 5vw, 3.25rem);
 }
 
-.band-head .kicker {
-  display: block;
-  margin-bottom: 1rem;
-}
-
-.band-head .accent {
-  color: var(--accent);
-}
-
 /* reveal ------------------------------------------------------------ */
 
 .rise {
