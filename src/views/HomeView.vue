@@ -29,8 +29,6 @@ onMounted(() => {
     <TopoLines class="topo" align="xMidYMax" />
 
     <div class="wrap inner" :class="{ ready: introDone }">
-      <p class="kicker tagline">{{ profile.role }} · {{ profile.location }}</p>
-
       <h1>
         Michael<br />
         Melichar<span class="stop">.</span>
@@ -223,15 +221,6 @@ onMounted(() => {
 .inner.ready > :nth-child(3) {
   transition-delay: 0.16s;
 }
-.inner.ready > :nth-child(4) {
-  transition-delay: 0.24s;
-}
-
-.tagline {
-  color: var(--alpine-lit);
-  margin-bottom: 1.5rem;
-}
-
 h1 {
   font-size: clamp(2.9rem, 10vw, 6.5rem);
   letter-spacing: -0.045em;

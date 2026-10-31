@@ -73,17 +73,13 @@ def main():
         )
 
     pad = 86 * SUPERSAMPLE
-    kicker = face("seguisb.ttf", "arialbd.ttf", size=23 * SUPERSAMPLE)
     name = face("segoeuib.ttf", "arialbd.ttf", size=118 * SUPERSAMPLE)
     note = face("segoeui.ttf", "arial.ttf", size=31 * SUPERSAMPLE)
 
-    draw.text(
-        (pad, pad),
-        "F L I G H T   S O F T W A R E   &   A V I O N I C S",
-        font=kicker,
-        fill=ALPINE,
-    )
-
+    # the hero dropped its kicker, so the card opens on the name as well. The
+    # offset that used to clear the kicker stays: it leaves a little more air
+    # above the name than below the note, which is what keeps the block from
+    # sitting dead centre.
     top = pad + 62 * SUPERSAMPLE
     draw.text((pad, top), "Michael", font=name, fill=SNOW)
     draw.text((pad, top + 128 * SUPERSAMPLE), "Melichar", font=name, fill=SNOW)

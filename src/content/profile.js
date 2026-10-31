@@ -1,6 +1,5 @@
 export const profile = {
   name: 'Michael Melichar',
-  role: 'Flight software & avionics',
   location: 'Buffalo, NY',
   marker: { coords: '42.89°N 78.88°W', elevation: '183 m' },
   lead: 'Computer science student at the University at Buffalo. I do a bit of everything, from embedded systems to general software and personal projects. Mostly I want to be writing hardware-level code for space and defense.',
